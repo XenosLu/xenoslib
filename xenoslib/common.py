@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import sys
 import time
 
 
@@ -15,9 +16,9 @@ class RestartSelfIfUpdated:
             print(
                 file,
                 'mtime changed:',
-                time.strftime('%H%M', time.localtime(self.mtime)),
+                time.strftime('%H:%M', time.localtime(self.mtime)),
                 'to',
-                time.strftime('%H%M', time.localtime(mtime)),
+                time.strftime('%H:%M', time.localtime(mtime)),
                 ', restarting...',
             )
             self.restart()
