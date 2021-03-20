@@ -3,8 +3,10 @@
 import os
 import time
 
+
 class RestartSelfIfUpdated:
     """检测自身更新并重启"""
+
     mtime = 0
 
     def __init__(self):

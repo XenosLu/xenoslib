@@ -4,6 +4,7 @@ import os
 
 import yaml
 
+
 class YamlConfig(SingletonWithArgs, dict):
     def __getattr__(self, key):
         return self.get(key)
