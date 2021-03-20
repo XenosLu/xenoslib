@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import time
 
 class RestartSelfIfUpdated:
     """检测自身更新并重启"""
