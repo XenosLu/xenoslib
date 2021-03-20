@@ -6,14 +6,13 @@ import time
 
 class RestartSelfIfUpdated:
     """检测自身更新并重启"""
-
     mtime = 0
 
-    def __init__(self):
-        mtime = os.path.getmtime(__file__)
+    def __init__(self, file=__file__):
+        mtime = os.path.getmtime(file)
         if self.mtime and mtime != self.mtime:
             print(
-                __file__,
+                file,
                 'mtime changed:',
                 time.strftime('%H%M', time.localtime(self.mtime)),
                 'to',
@@ -21,7 +20,7 @@ class RestartSelfIfUpdated:
                 ', restarting...',
             )
             self.restart()
-        RestartSelfIfUpdated.mtime = os.path.getmtime(__file__)
+        RestartSelfIfUpdated.mtime = os.path.getmtime(file)
 
     def restart(self):
         python = sys.executable
