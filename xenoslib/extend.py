@@ -4,6 +4,8 @@ import os
 
 import yaml
 
+from xenoslib.base import SingletonWithArgs
+
 
 class YamlConfig(SingletonWithArgs, dict):
     def __getattr__(self, key):
