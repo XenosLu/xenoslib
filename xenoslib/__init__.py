@@ -1,4 +1,5 @@
-from .common import RestartSelfIfUpdated
+from .common import *
+from .extend import *
 
 class SingletonWithArgs:
     """带参数的单例模式, 通过继承使用，需放到第一继承位"""
