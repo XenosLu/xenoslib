@@ -9,6 +9,6 @@ setup(
     description="Xenos' common lib",
     author='Xenocider',
     author_email='xenos.lu@gmail.com',
-    url="None",
+    url='https://github.com/XenosLu/xenoslib.git',
     install_requires=['PyYAML>=5.1'],
 )
