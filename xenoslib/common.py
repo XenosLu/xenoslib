@@ -12,13 +12,14 @@ class RestartSelfIfUpdated:
 
     def __init__(self, file=__file__):
         mtime = os.path.getmtime(file)
+        time_format = '%H:%M'
         if self.mtime and mtime != self.mtime:
             print(
                 file,
                 'mtime changed:',
-                time.strftime('%H:%M', time.localtime(self.mtime)),
+                time.strftime(time_format, time.localtime(self.mtime)),
                 'to',
-                time.strftime('%H:%M', time.localtime(mtime)),
+                time.strftime(time_format, time.localtime(mtime)),
                 ', restarting...',
             )
             self.restart()
