@@ -8,6 +8,7 @@ from xenoslib.base import SingletonWithArgs
 
 
 class YamlConfig(SingletonWithArgs, dict):
+    """yaml格式配置管理"""
     def __getattr__(self, key):
         return self.get(key)
 

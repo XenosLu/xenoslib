@@ -6,7 +6,7 @@ import time
 
 
 class RestartSelfIfUpdated:
-    """检测自身更新并重启"""
+    """检测脚本自身更新并重启"""
 
     mtime = 0
 
