@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
+import xenoslib
 
 setup(
     name='xenoslib',
-    version='0.1.2.4',
+    # version='0.1.2.4',
+    version=xenoslib.__version__,
     packages=find_packages(),
     description="Xenos' common lib",
     author='Xenocider',

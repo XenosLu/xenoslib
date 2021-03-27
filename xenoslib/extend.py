@@ -30,5 +30,7 @@ class YamlConfig(SingletonWithArgs, dict):
                 self.update(yaml.safe_load(r))
 
     def save(self):
+        data = str(self)
         with open(self._config_file, 'w', encoding='utf-8') as w:
-            yaml.safe_dump(self.copy(), w, allow_unicode=True)
+            w.write(data)
+            # yaml.safe_dump(self.copy(), w, allow_unicode=True)
