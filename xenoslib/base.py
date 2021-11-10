@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+
 def color(value, color_name='blue'):
     """
     return text with color, default in blue.
@@ -26,21 +27,23 @@ def color(value, color_name='blue'):
 
 def pause_windows():
     import msvcrt
+
     msvcrt.getch()
+
 
 def pause_linux():
     import os
     import termios
-     
+
     # 获取标准输入的描述符
     fd = sys.stdin.fileno()
-     
+
     # 获取标准输入(终端)的设置
     old_ttyinfo = termios.tcgetattr(fd)
-     
+
     # 配置终端
     new_ttyinfo = old_ttyinfo[:]
-     
+
     # 使用非规范模式(索引3是c_lflag 也就是本地模式)
     new_ttyinfo[3] &= ~termios.ICANON
 
@@ -52,12 +55,14 @@ def pause_linux():
 
     os.read(fd, 2)
 
+
 def pause():
     print('Press any key to continue...')
     if sys.platform == 'win32':
         pause_windows()
     else:
         pause_linux()
+
 
 class SingletonWithArgs:
     """带参数的单例模式, 通过继承使用，需放到第一继承位"""
@@ -69,6 +74,7 @@ class SingletonWithArgs:
         if not cls._instances.get(arg):
             cls._instances[arg] = super().__new__(cls)
         return cls._instances[arg]
+
 
 class ArgMethodBase:
     """auto generator arguments by static methods"""
