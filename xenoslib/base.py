@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
+import time
 
 
 def color(value, color_name='blue'):
@@ -26,7 +27,6 @@ def color(value, color_name='blue'):
 
 def pause_windows():
     import msvcrt
-
     msvcrt.getch()
 
 
@@ -132,3 +132,46 @@ class ArgMethodBase:
                 }
             )
         return arg_lists
+
+def timeout_windows(seconds):
+    import msvcrt
+    
+    
+    for second in range (seconds, 0, -1):
+        if msvcrt.kbhit():
+            print('nit')
+            return
+        print(f'Waiting {second}s , press any key to continue...', end='\r')
+        time.sleep(1)
+
+def timeout(seconds):
+    if sys.platform == 'win32':
+        timeout_windows(seconds)
+    else:
+        timeout_linux(seconds)
+
+def timeout_linux(seconds):
+    import select
+    import termios
+    import tty
+     
+    old_settings = termios.tcgetattr(sys.stdin)
+    tty.setcbreak(sys.stdin.fileno())
+
+    for second in range (seconds, 0, -1):
+        print(f'Waiting {second}s , press any key to continue...', end='\r')
+        break_flag = False
+        for i in range(1000):
+            time.sleep(.001)
+            if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
+                sys.stdin.read(1)
+                break_flag = True
+                break
+        if break_flag:
+            break
+
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)  # recover terminal
+
+
+if __name__ == '__main__':
+    timeout(5)
