@@ -34,3 +34,26 @@ class YamlConfig(SingletonWithArgs, dict):
         with open(self._config_file, 'w', encoding='utf-8') as w:
             w.write(data)
             # yaml.safe_dump(self.copy(), w, allow_unicode=True)
+
+
+def del_to_recyclebin(filepath, on_fail_delete=False):
+    """删除文件到回收站"""
+    if not platform.system() == 'Windows':
+        if on_fail_delete:
+            os.remove(filepath)
+            return True
+        return False
+    from win32com.shell import shell, shellcon
+
+    res, _ = shell.SHFileOperation(
+        (
+            0,
+            shellcon.FO_DELETE,
+            filepath,
+            None,
+            shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,
+            None,
+            None,
+        )
+    )
+    return res == 0
