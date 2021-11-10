@@ -35,25 +35,20 @@ def pause_linux():
     import os
     import termios
 
-    # 获取标准输入的描述符
-    fd = sys.stdin.fileno()
-
     # 获取标准输入(终端)的设置
-    old_ttyinfo = termios.tcgetattr(fd)
-
-    # 配置终端
-    new_ttyinfo = old_ttyinfo[:]
+    old_settings = termios.tcgetattr(sys.stdin)
+    
+    new_settings = old_settings[:]
 
     # 使用非规范模式(索引3是c_lflag 也就是本地模式)
-    new_ttyinfo[3] &= ~termios.ICANON
+    new_settings[3] &= ~termios.ICANON
 
     # 关闭回显(输入不会被显示)
-    # new_ttyinfo[3] &= ~termios.ECHO
+    new_settings[3] &= ~termios.ECHO
 
-    # 使设置生效
-    termios.tcsetattr(fd, termios.TCSANOW, new_ttyinfo)
-
-    os.read(fd, 2)
+    termios.tcsetattr(sys.stdin, termios.TCSANOW, new_settings)  # 使设置生效
+    os.read(sys.stdin.fileno(), 7)  # 读入字符
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)  # recover terminal
 
 
 def pause():
@@ -176,4 +171,4 @@ def timeout_linux(seconds):
 
 
 if __name__ == '__main__':
-    timeout(5)
+    pause()
