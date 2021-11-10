@@ -13,10 +13,5 @@ setup(
     url='https://github.com/XenosLu/xenoslib.git',
     install_requires=['PyYAML>=5.4'],
     python_requires='>=3.4.0',
-    extras_require={
-        ':sys_platform == "win32"': [
-            'pywin32>=223'
-        ],
-        ':"linux" in sys_platform': []
-    },
+    extras_require={':sys_platform == "win32"': ['pywin32>=223'], ':"linux" in sys_platform': []},
 )
