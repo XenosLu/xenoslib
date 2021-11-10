@@ -37,7 +37,7 @@ def pause_linux():
 
     # 获取标准输入(终端)的设置
     old_settings = termios.tcgetattr(sys.stdin)
-    
+
     new_settings = old_settings[:]
 
     # 使用非规范模式(索引3是c_lflag 也就是本地模式)
@@ -139,6 +139,7 @@ def timeout_windows(seconds):
         print(f'Waiting {second}s , press any key to continue...', end='\r')
         time.sleep(1)
     print()
+
 
 def timeout(seconds):
     if sys.platform == 'win32':
