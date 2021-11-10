@@ -140,11 +140,10 @@ def timeout_windows(seconds):
 
     for second in range(seconds, 0, -1):
         if msvcrt.kbhit():
-            print('nit')
-            return
+            break
         print(f'Waiting {second}s , press any key to continue...', end='\r')
         time.sleep(1)
-
+    print()
 
 def timeout(seconds):
     if sys.platform == 'win32':
