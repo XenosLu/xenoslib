@@ -11,6 +11,8 @@ def color(value, color_name='blue'):
     "Why is it blue?"
     "It's always blue."
     """
+    if sys.platform == 'win32':
+        return value
     color_code = {
         'red': 31,
         'green': 32,
@@ -19,10 +21,7 @@ def color(value, color_name='blue'):
         'magenta': 35,
         'cyan': 36,
     }
-    if sys.platform == 'win32':
-        return value
-    else:
-        return '\033[1;{code}m{value}\033[0m'.format(code=color_code[color_name], value=value)
+    return '\033[1;{code}m{value}\033[0m'.format(code=color_code[color_name], value=value)
 
 
 def pause_windows():
