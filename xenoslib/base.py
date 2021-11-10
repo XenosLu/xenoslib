@@ -21,8 +21,7 @@ def color(value, color_name='blue'):
     if sys.platform == 'win32':
         return value
     else:
-        return '\033[1;{code}m{value}\033[0m'.format(
-            code=color_code[color_name], value=value)
+        return '\033[1;{code}m{value}\033[0m'.format(code=color_code[color_name], value=value)
 
 
 def pause_windows():
@@ -82,12 +81,13 @@ class ArgMethodBase:
     def __init__(self, epilog=None):
         """initialize arguments parser"""
         parser = argparse.ArgumentParser(
-            description=self.__doc__, epilog=epilog,
-            formatter_class=argparse.RawDescriptionHelpFormatter)
+            description=self.__doc__,
+            epilog=epilog,
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+        )
         subparsers = parser.add_subparsers(title='action', dest='action')
         for arg_map in self.__get_arg_lists__():
-            sub_parser = subparsers.add_parser(
-                arg_map['action'], help=arg_map['help'])
+            sub_parser = subparsers.add_parser(arg_map['action'], help=arg_map['help'])
             for arg in arg_map['required_args']:
                 sub_parser.add_argument(arg)
             for arg, value in arg_map['zip_optional_args']:
@@ -119,14 +119,16 @@ class ArgMethodBase:
             if func.__defaults__ is not None:
                 default_len = len(func.__defaults__)
                 default_values = func.__defaults__
-            required_args = func.__code__.co_varnames[:
-                                                      func.__code__.co_argcount - default_len]
-            optional_args = func.__code__.co_varnames[func.__code__.co_argcount -
-                                                      default_len:func.__code__.co_argcount]
-            arg_lists.append({
-                'action': func_name,
-                'help': func.__doc__,
-                'required_args': required_args,
-                'zip_optional_args': zip(optional_args, default_values),
-            })
+            required_args = func.__code__.co_varnames[: func.__code__.co_argcount - default_len]
+            optional_args = func.__code__.co_varnames[
+                func.__code__.co_argcount - default_len : func.__code__.co_argcount
+            ]
+            arg_lists.append(
+                {
+                    'action': func_name,
+                    'help': func.__doc__,
+                    'required_args': required_args,
+                    'zip_optional_args': zip(optional_args, default_values),
+                }
+            )
         return arg_lists
