@@ -26,8 +26,11 @@ def color(value, color_name='blue'):
 
 def pause_windows():
     import msvcrt
-
+    
     msvcrt.getch()
+    while msvcrt.kbhit():
+        msvcrt.getch()
+    
 
 
 def pause_linux():
