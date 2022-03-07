@@ -15,7 +15,8 @@ class RestartSelfIfUpdated:
 
     def __init__(self, *files):
         time_format = '%Y-%m-%d %H:%M:%S'
-        
+        files = list(files)
+        files.append(os.path.abspath(sys.argv[0]))
         logger.debug(f'detecting file update for files: {files}')
         for file in files:
             file = os.path.abspath(file)
