@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)  
 
-class RestartSelfIfUpdated:
+class RestartWhenModified:
     """restart python script if scripts modified"""
 
     records = {}
