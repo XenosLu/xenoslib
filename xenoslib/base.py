@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
-import time
 
 
 def color(value, color_name='blue'):
@@ -22,43 +21,6 @@ def color(value, color_name='blue'):
         'cyan': 36,
     }
     return '\033[1;{code}m{value}\033[0m'.format(code=color_code[color_name], value=value)
-
-
-def pause_windows():
-    import msvcrt
-    
-    msvcrt.getch()
-    while msvcrt.kbhit():
-        msvcrt.getch()
-    
-
-
-def pause_linux():
-    import os
-    import termios
-
-    # 获取标准输入(终端)的设置
-    old_settings = termios.tcgetattr(sys.stdin)
-
-    new_settings = old_settings[:]
-
-    # 使用非规范模式(索引3是c_lflag 也就是本地模式)
-    new_settings[3] &= ~termios.ICANON
-
-    # 关闭回显(输入不会被显示)
-    new_settings[3] &= ~termios.ECHO
-
-    termios.tcsetattr(sys.stdin, termios.TCSANOW, new_settings)  # 使设置生效
-    os.read(sys.stdin.fileno(), 7)  # 读入字符
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)  # recover terminal
-
-
-def pause():
-    print('Press any key to continue...')
-    if sys.platform == 'win32':
-        pause_windows()
-    else:
-        pause_linux()
 
 
 class SingletonWithArgs:
@@ -130,48 +92,3 @@ class ArgMethodBase:
                 }
             )
         return arg_lists
-
-
-def timeout_windows(seconds):
-    import msvcrt
-
-    for second in range(seconds, 0, -1):
-        if msvcrt.kbhit():
-            break
-        print(f'Waiting {second}s , press any key to continue...', end='\r')
-        time.sleep(1)
-    print()
-
-
-def timeout(seconds):
-    if sys.platform == 'win32':
-        timeout_windows(seconds)
-    else:
-        timeout_linux(seconds)
-
-
-def timeout_linux(seconds):
-    import select
-    import termios
-    import tty
-
-    old_settings = termios.tcgetattr(sys.stdin)
-    tty.setcbreak(sys.stdin.fileno())
-
-    for second in range(seconds, 0, -1):
-        print(f'Waiting {second}s , press any key to continue...', end='\r')
-        break_flag = False
-        for i in range(1000):
-            time.sleep(0.001)
-            if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
-                sys.stdin.read(1)
-                break_flag = True
-                break
-        if break_flag:
-            break
-
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)  # recover terminal
-
-
-if __name__ == '__main__':
-    pause()
