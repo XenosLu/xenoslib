@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import logging
 
 import yaml
+import requests
 
 from xenoslib.base import SingletonWithArgs
 
@@ -58,3 +60,25 @@ def del_to_recyclebin(filepath, on_fail_delete=False):
         )
     )
     return res == 0
+
+def send_notify(msg, key):
+    """send a message for ifttt"""
+    url = f'https://maker.ifttt.com/trigger/message/with/key/{key}'
+    data = {'value1': msg}
+    return requests.post(url, data=data)
+
+
+class IFTTTLogHandler(logging.Handler):
+    """
+    log handler for IFTTT
+    usage：
+    key = 'xxxxx.xxxzx.xxxzx.xxxzx'
+    iftttloghandler = IFTTTLogHandler(key, level=logging.INFO)
+    logging.getLogger(__name__).addHandler(iftttloghandler)
+    """
+    def __init__(self, key, level=logging.CRITICAL, *args, **kwargs):
+        self.key = key
+        super().__init__(level=level, *args, **kwargs)
+
+    def emit(self, record):
+        send_notify(self.format(record), self.key)

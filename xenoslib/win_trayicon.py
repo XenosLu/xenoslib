@@ -326,9 +326,5 @@ class ToastLogHandler(logging.Handler):
         self.callback = callback
 
     def emit(self, record):
-        """
-        :param record:
-        :return:
-        """
         title = record.filename if record.name == '__main__' else record.name
         self.callback(title=title, info=self.format(record), levelname=record.levelname)
