@@ -319,7 +319,13 @@ class SysTrayIconApp(SysTrayIcon):
 
 
 class ToastLogHandler(logging.Handler):
-    """log handler for SysTrayIcon"""
+    """
+    log handler for SysTrayIcon
+    Usage:
+    tray_app = SysTrayIconApp(**kwargs)
+    toasthandler = ToastLogHandler(tray_app.toast)
+    logging.getLogger(__name__).addHandler(toasthandler) 
+    """
 
     def __init__(self, callback, level=logging.INFO, *args, **kwargs):
         super().__init__(level=level, *args, **kwargs)
