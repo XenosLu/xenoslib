@@ -22,4 +22,4 @@ def timeout(seconds):
 
 
 if __name__ == '__main__':
-    timeout(3)
+    timeout(1)
