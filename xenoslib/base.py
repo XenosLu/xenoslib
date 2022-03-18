@@ -4,6 +4,13 @@ import argparse
 import sys
 
 
+def sleep(seconds, mute=False):
+    end = time.time() + seconds
+    while time.time() < end:
+        if not mute:
+            print(f'Countdown {end - time.time():.0f} s\t', end='\r')
+        time.sleep(0.001)
+
 def color(value, color_name='blue'):
     """
     return text with color, default in blue.
