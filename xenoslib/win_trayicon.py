@@ -293,6 +293,7 @@ class SysTrayIconApp(SysTrayIcon):
 
     @staticmethod
     def restart_script():
+        os.system('cls')
         python = sys.executable
         os.execl(python, python, *[f'"{i}"' if ' ' in i else i for i in sys.argv])
 
