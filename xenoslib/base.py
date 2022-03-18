@@ -5,6 +5,7 @@ import sys
 
 
 def sleep(seconds, mute=False):
+    """sleep with countdown show and prevent pause or sleep of PC"""
     end = time.time() + seconds
     while time.time() < end:
         if not mute:
