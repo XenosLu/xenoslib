@@ -281,6 +281,7 @@ class SysTrayIconApp(SysTrayIcon):
             *((('-', '-'),) if extra_menu_options else ()),
             ('Enable Notifications (&N)', self.enable_notifications),
             ('-', '-'),
+            ('Clear Console (&C)', partial(os.system, 'cls')),
             ('Restart (&T)', self.restart_script),
             ('Exit (&X)', self.quit),
         )
@@ -293,7 +294,6 @@ class SysTrayIconApp(SysTrayIcon):
 
     @staticmethod
     def restart_script():
-        os.system('cls')
         python = sys.executable
         os.execl(python, python, *[f'"{i}"' if ' ' in i else i for i in sys.argv])
 
