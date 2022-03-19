@@ -8,4 +8,4 @@ from .base import *
 from .dev import *
 from .dev import RestartWhenModified as RestartSelfIfUpdated  # deprecated class name
 from .extend import *
-__version__ = '0.1.9.2'
+__version__ = '0.1.10.0'

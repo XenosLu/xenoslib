@@ -13,6 +13,7 @@ def sleep(seconds, mute=False):
             print(f'Countdown {end - time.time():.0f} s\t', end='\r')
         time.sleep(0.001)
 
+
 def color(value, color_name='blue'):
     """
     return text with color, default in blue.
@@ -30,6 +31,39 @@ def color(value, color_name='blue'):
         'cyan': 36,
     }
     return '\033[1;{code}m{value}\033[0m'.format(code=color_code[color_name], value=value)
+
+
+class NestedData:
+    """utils for nested data"""
+
+    def __init__(self, obj):
+        self.data = obj
+        self.current = None
+
+    def _find_key(self, obj, key, path=''):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                new_path = path + f"['{k}']"
+                if k == key:
+                    self.path = path
+                    return v
+                else:
+                    ret = self._find_key(v, key, new_path)
+                    if ret is not None:
+                        return ret
+        elif isinstance(obj, list):
+            for n, i in enumerate(obj):
+                ret = self._find_key(i, key, path + f'[{n}]')
+                if ret is not None:
+                    return ret
+        else:
+            return None
+
+    def find_key(self, key):
+        """find key and path for data"""
+        self.path = None
+        self.value = self._find_key(self.data, key)
+        return self.value
 
 
 class SingletonWithArgs:
