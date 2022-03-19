@@ -38,12 +38,11 @@ class NestedData:
 
     def __init__(self, obj):
         self.data = obj
-        self.current = None
 
     def _find_key(self, obj, key, path=''):
         if isinstance(obj, dict):
             for k, v in obj.items():
-                new_path = path + f"['{k}']"
+                new_path = f"{path}['{k}']"
                 if k == key:
                     self.path = path
                     return v
@@ -53,7 +52,7 @@ class NestedData:
                         return ret
         elif isinstance(obj, list):
             for n, i in enumerate(obj):
-                ret = self._find_key(i, key, path + f'[{n}]')
+                ret = self._find_key(i, key, f'{path}[{n}]')
                 if ret is not None:
                     return ret
         else:
@@ -135,3 +134,7 @@ class ArgMethodBase:
                 }
             )
         return arg_lists
+
+if __name__ == '__main__':
+    t = {}
+    print(NestedData(t).find_key('a'))
