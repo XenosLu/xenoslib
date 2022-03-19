@@ -39,30 +39,57 @@ class NestedData:
     def __init__(self, obj):
         self.data = obj
 
-    def _find_key(self, obj, key, path=''):
+    def _find_key(self, obj, path=''):
         if isinstance(obj, dict):
             for k, v in obj.items():
                 new_path = f"{path}['{k}']"
-                if k == key:
-                    self.path = path
+                if k == self.key:
+                    self.path = new_path
                     return v
                 else:
-                    ret = self._find_key(v, key, new_path)
+                    ret = self._find_key(v, new_path)
                     if ret is not None:
                         return ret
         elif isinstance(obj, list):
             for n, i in enumerate(obj):
-                ret = self._find_key(i, key, f'{path}[{n}]')
+                ret = self._find_key(i, f'{path}[{n}]')
                 if ret is not None:
                     return ret
-        else:
-            return None
+        return None
+
+    def _find_value(self, obj, path=''):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                new_path = f"{path}['{k}']"
+                if v == self.value:
+                    self.path = new_path
+                    return obj
+                else:
+                    ret = self._find_value(v, new_path)
+                    if ret is not None:
+                        return ret
+        elif isinstance(obj, list):
+            for n, i in enumerate(obj):
+                new_path = f'{path}[{n}]'
+                ret = self._find_value(i, new_path)
+                if i == self.value:
+                    self.path = new_path
+                    return obj
+                if ret is not None:
+                    return ret
+        return None
 
     def find_key(self, key):
         """find key and path for data"""
         self.path = None
-        self.value = self._find_key(self.data, key)
-        return self.value
+        self.key = key
+        return self._find_key(self.data)
+
+    def find_value(self, value):
+        """find key and path for data"""
+        self.path = None
+        self.value = value
+        return self._find_value(self.data)
 
 
 class SingletonWithArgs:
@@ -135,6 +162,8 @@ class ArgMethodBase:
             )
         return arg_lists
 
+
 if __name__ == '__main__':
-    t = {}
-    print(NestedData(t).find_key('a'))
+    t = {'a': {'b': ['c', [0, {'d': 'e'}]]}}
+    print(NestedData(t).find_key('d'))
+    print(NestedData(t).find_value('e'))
