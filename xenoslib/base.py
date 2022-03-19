@@ -79,6 +79,25 @@ class NestedData:
                     return ret
         return None
 
+    def _find_key_value(self, obj, path=''):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                new_path = f"{path}['{k}']"
+                if k == self.key and v == self.value:
+                    self.path = new_path
+                    return obj
+                else:
+                    ret = self._find_key_value(v, new_path)
+                    if ret is not None:
+                        return ret
+        elif isinstance(obj, list):
+            for n, i in enumerate(obj):
+                ret = self._find_key_value(i, f'{path}[{n}]')
+                if ret is not None:
+                    return ret
+        return None
+
+
     def find_key(self, key):
         """find key and path for data"""
         self.path = None
@@ -86,10 +105,17 @@ class NestedData:
         return self._find_key(self.data)
 
     def find_value(self, value):
-        """find key and path for data"""
+        """find data that matches value and path for data"""
         self.path = None
         self.value = value
         return self._find_value(self.data)
+
+    def find_keyvalue(self, key, value):
+        """find data matches both key and value"""
+        self.path = None
+        self.key = key
+        self.value = value
+        return self._find_key_value(self.data)
 
 
 class SingletonWithArgs:
@@ -167,3 +193,4 @@ if __name__ == '__main__':
     t = {'a': {'b': ['c', [0, {'d': 'e'}]]}}
     print(NestedData(t).find_key('d'))
     print(NestedData(t).find_value('e'))
+    print(NestedData(t).find_keyvalue('d', 'e'))

@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xenoslib',
-    version='0.1.11.0',
+    version='0.1.12.0',
     packages=find_packages(),
     description="Xenos' common lib",
     author='Xenocider',
