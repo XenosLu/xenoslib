@@ -10,8 +10,11 @@ setup(
     author='Xenocider',
     author_email='xenos.lu@gmail.com',
     url='https://github.com/XenosLu/xenoslib.git',
-    install_requires=['PyYAML>=5.4'],
-    python_requires='>=3.4.0',
+    install_requires=[
+        'PyYAML>=5.4',
+        'requests>=2',
+    ],
+    python_requires='>=3.5.0',
     extras_require={
         ':sys_platform == "win32"': ['pywin32>=223'],
         ':"linux" in sys_platform': [],
