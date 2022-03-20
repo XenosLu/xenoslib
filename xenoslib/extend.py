@@ -81,4 +81,12 @@ class IFTTTLogHandler(logging.Handler):
         super().__init__(level=level, *args, **kwargs)
 
     def emit(self, record):
-        send_notify(self.format(record), self.key)
+        try:
+            send_notify(self.format(record), self.key)
+        except Exception as exc:
+            logging.getlog(__name__).warning(exc, exc_info=True)
+
+
+if __name__ == '__main__':
+    key = ''
+    print(send_notify('test', key))
