@@ -40,7 +40,7 @@ class YamlConfig(SingletonWithArgs, dict):
 
 
 def del_to_recyclebin(filepath, on_fail_delete=False):
-    """删除文件到回收站"""
+    """delete file to recyclebin if possible"""
     if not sys.platform == 'win32':
         if on_fail_delete:
             os.remove(filepath)
