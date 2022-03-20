@@ -7,6 +7,7 @@ setup(
     version='0.1.12.1',
     packages=find_packages(),
     description="Xenos' common lib",
+    long_description_content_type='text/x-rst',
     author='Xenocider',
     author_email='xenos.lu@gmail.com',
     url='https://github.com/XenosLu/xenoslib.git',
