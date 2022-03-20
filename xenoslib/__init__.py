@@ -1,4 +1,8 @@
 import sys
+import importlib.metadata
+
+__version__ = importlib.metadata.version('xenoslib')
+
 if sys.platform == 'win32':
     from .windows import *
     from .win_trayicon import *
