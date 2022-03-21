@@ -10,7 +10,7 @@ def sleep(seconds, mute=False):
     end = time.time() + seconds
     while time.time() < end:
         if not mute:
-            print(f'Countdown {end - time.time():.0f} s\t', end='\r')
+            print(f'Remaining {seconds:.0f}/{end - time.time():.0f}  s\t', end='\r')
         time.sleep(0.001)
 
 
