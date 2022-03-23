@@ -7,5 +7,5 @@ else:
     from .linux import *
 from .base import *
 from .dev import *
-from .dev import RestartWhenModified as RestartSelfIfUpdated  # deprecated class name countdown 3
+from .dev import RestartWhenModified as RestartSelfIfUpdated  # deprecated class name countdown 2
 from .extend import *

@@ -11,7 +11,7 @@ def sleep(seconds, mute=False):
     while time.time() < end:
         if not mute:
             print(f'Remaining {seconds:.0f}/{end - time.time():.0f}  s\t', end='\r')
-        time.sleep(0.001)
+        time.sleep(1)
 
 
 def color(value, color_name='blue'):
@@ -186,3 +186,18 @@ class ArgMethodBase:
                 }
             )
         return arg_lists
+
+
+if __name__ == '__main__':
+    data = {
+        'd': [
+            {'id': 1},
+            {'id': 2},
+            {'id': 3},
+            {'id': 4},
+        ]
+    }
+    n = NestedData(data)
+    for i in n.find_keys('id'):
+        print(i)
+    # print(n.path)
