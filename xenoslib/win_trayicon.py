@@ -316,7 +316,7 @@ class SysTrayIconApp(SysTrayIcon):
             result = win32gui.PumpWaitingMessages()
             if result:
                 return
-            time.sleep(0.01)
+            time.sleep(0.05)
 
 
 class ToastLogHandler(logging.Handler):
