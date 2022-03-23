@@ -97,7 +97,6 @@ class NestedData:
                     return ret
         return None
 
-
     def find_key(self, key):
         """find key and path for data"""
         self.path = None
@@ -187,10 +186,3 @@ class ArgMethodBase:
                 }
             )
         return arg_lists
-
-
-if __name__ == '__main__':
-    t = {'a': {'b': ['c', [0, {'d': 'e'}]]}}
-    print(NestedData(t).find_key('d'))
-    print(NestedData(t).find_value('e'))
-    print(NestedData(t).find_keyvalue('d', 'e'))
