@@ -1,20 +1,17 @@
 # Introduce
 > Some commonly useful functions
 
-# Install
-Install directly from github:
+## Requirements
+- Python >= 3.5
+
+## Download and Installation
+### Install from pypi:
+
+    pip3 install xenoslib
+
+### Install directly from github:
 
     pip3 install git+https://github.com/XenosLu/xenoslib.git
-
-Clone and install:
-
-    git clone https://github.com/XenosLu/xenoslib.git
-    cd xenoslib
-    pip3 install .
-
-Uninstall:
-
-    pip3 uninstall xenoslib
 
 # Feature lists:
 
