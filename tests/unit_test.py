@@ -25,16 +25,23 @@ class UAMTest(unittest.TestCase):
         print('=' * 79)
 
     def test_1_nesteddata(self):
-        data = {'a': {'b': ['c', [0, {'d': 'e'}]]}}
-
-        result = NestedData(data).find_key('d')
+        data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a':'b'}]]}}
+        nesteddata = NestedData(data)
+        
+        result = nesteddata.find_key('d')
         self.assertEqual(result, 'e')
+        result = nesteddata.path
+        self.assertEqual(result, "['a']['b'][1][1]['d']")
 
-        result = NestedData(data).find_value('e')
+        result = nesteddata.find_value('e')
         self.assertEqual(result, {'d': 'e'})
+        result = nesteddata.path
+        self.assertEqual(result, "['a']['b'][1][1]['d']")
 
-        result = NestedData(data).find_keyvalue('d', 'e')
+        result = nesteddata.find_keyvalue('d', 'e')
         self.assertEqual(result, {'d': 'e'})
+        result = nesteddata.path
+        self.assertEqual(result, "['a']['b'][1][1]['d']")
 
 
 if __name__ == '__main__':

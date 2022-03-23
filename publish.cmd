@@ -4,7 +4,7 @@ set current=%~dp0
 cd /d %current%
 
 python setup.py develop
-python tests\unit_test.py || goto :EOF
+python tests\unit_test.py || pause && goto :EOF
 
 rd /s /q dist
 python -m build
