@@ -39,82 +39,59 @@ class NestedData:
     def __init__(self, obj):
         self.data = obj
 
-    def _find_key(self, obj, path=''):
+    def _find(self, obj, path=''):
         if isinstance(obj, dict):
             for k, v in obj.items():
                 new_path = f"{path}['{k}']"
-                if k == self.key:
-                    self.path = new_path
-                    return v
+                if self._condition(k, v):
+                    yield obj, new_path
                 else:
-                    ret = self._find_key(v, new_path)
-                    if ret is not None:
-                        return ret
-        elif isinstance(obj, list):
-            for n, i in enumerate(obj):
-                ret = self._find_key(i, f'{path}[{n}]')
-                if ret is not None:
-                    return ret
-        return None
-
-    def _find_value(self, obj, path=''):
-        if isinstance(obj, dict):
-            for k, v in obj.items():
-                new_path = f"{path}['{k}']"
-                if v == self.value:
-                    self.path = new_path
-                    return obj
-                else:
-                    ret = self._find_value(v, new_path)
-                    if ret is not None:
-                        return ret
+                    yield from self._find(v, new_path)
         elif isinstance(obj, list):
             for n, i in enumerate(obj):
                 new_path = f'{path}[{n}]'
-                ret = self._find_value(i, new_path)
-                if i == self.value:
-                    self.path = new_path
-                    return obj
-                if ret is not None:
-                    return ret
-        return None
+                if self._condition(n, i):
+                    yield obj, new_path
+                yield from self._find(i, new_path)
 
-    def _find_key_value(self, obj, path=''):
-        if isinstance(obj, dict):
-            for k, v in obj.items():
-                new_path = f"{path}['{k}']"
-                if k == self.key and v == self.value:
-                    self.path = new_path
-                    return obj
-                else:
-                    ret = self._find_key_value(v, new_path)
-                    if ret is not None:
-                        return ret
-        elif isinstance(obj, list):
-            for n, i in enumerate(obj):
-                ret = self._find_key_value(i, f'{path}[{n}]')
-                if ret is not None:
-                    return ret
-        return None
+    def find_keys(self, key):
+        """find all data with path matches key"""
+        self._condition = lambda k, v: k == key
+        return self._find(self.data)
+
+    def find_values(self, value):
+        """find all data that matches value and path for data"""
+        self._condition = lambda k, v: v == value
+        return self._find(self.data)
+
+    def find_keyvalues(self, key, value):
+        """find all data that matches value and path for data"""
+        self._condition = lambda k, v: (k, v) == (key, value)
+        return self._find(self.data)
 
     def find_key(self, key):
         """find key and path for data"""
         self.path = None
-        self.key = key
-        return self._find_key(self.data)
+        for obj, path in self.find_keys(key):
+            self.path = path
+            return obj[key]
+        return None
 
     def find_value(self, value):
-        """find data that matches value and path for data"""
+        """find key and path for data"""
         self.path = None
-        self.value = value
-        return self._find_value(self.data)
+        for obj, path in self.find_values(value):
+            self.path = path
+            return obj
+        return None
 
     def find_keyvalue(self, key, value):
-        """find data matches both key and value"""
+        """find key and path for data"""
         self.path = None
-        self.key = key
-        self.value = value
-        return self._find_key_value(self.data)
+        for obj, path in self.find_keyvalues(key, value):
+            self.path = path
+            return obj
+        return None
 
 
 class SingletonWithArgs:
@@ -195,9 +172,12 @@ if __name__ == '__main__':
             {'id': 2},
             {'id': 3},
             {'id': 4},
+            [{'id': 3}],
         ]
     }
     n = NestedData(data)
-    for i in n.find_keys('id'):
-        print(i)
-    # print(n.path)
+    from pprint import pprint
+    pprint(list(n.find_keyvalues('id', 3)))
+    print(n.find_keyvalue('id', 3))
+    print(n.path)
+
