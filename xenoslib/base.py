@@ -178,11 +178,8 @@ if __name__ == '__main__':
     n = NestedData(data)
 
     from pprint import pprint
-    n._condition = lambda k, v: k == 'id'
-    t = n._find(data)
-    pprint(list(t))
 
-    # pprint(list(n.find_keyvalues('id', 3)))
+    pprint(list(n.find_keys('id')))
     # print(n.find_keyvalue('id', 3))
     # print(n.path)
 
