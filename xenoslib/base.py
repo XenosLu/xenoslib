@@ -42,14 +42,14 @@ class NestedData:
     def _find(self, obj, path=''):
         if isinstance(obj, dict):
             for k, v in obj.items():
-                new_path = f"{path}['{k}']"
+                new_path = f"{path}[{repr(k)}]"
                 if self._condition(k, v):
                     yield obj, new_path
                 else:
                     yield from self._find(v, new_path)
         elif isinstance(obj, list):
             for n, i in enumerate(obj):
-                new_path = f'{path}[{n}]'
+                new_path = f'{path}[{repr(n)}]'
                 if self._condition(n, i):
                     yield obj, new_path
                 else:
@@ -177,8 +177,13 @@ if __name__ == '__main__':
         ]
     }
     n = NestedData(data)
+
     from pprint import pprint
-    pprint(list(n.find_keyvalues('id', 3)))
-    print(n.find_keyvalue('id', 3))
-    print(n.path)
+    n._condition = lambda k, v: k == 'id'
+    t = n._find(data)
+    pprint(list(t))
+
+    # pprint(list(n.find_keyvalues('id', 3)))
+    # print(n.find_keyvalue('id', 3))
+    # print(n.path)
 
