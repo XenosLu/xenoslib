@@ -41,34 +41,33 @@ class NestedData:
 
     def _find(self, obj, path=''):
         if isinstance(obj, dict):
-            for k, v in obj.items():
-                new_path = f"{path}[{repr(k)}]"
-                if self._condition(k, v):
-                    yield obj, new_path
-                else:
-                    yield from self._find(v, new_path)
+            iter_obj = obj.items()
         elif isinstance(obj, list):
-            for n, i in enumerate(obj):
-                new_path = f'{path}[{repr(n)}]'
-                if self._condition(n, i):
-                    yield obj, new_path
-                else:
-                    yield from self._find(i, new_path)
+            iter_obj = enumerate(obj)
+        else:
+            return
+        for k, v in iter_obj:
+            new_path = f'{path}[{repr(k)}]'
+            if self._condition(k, v):
+                yield obj, new_path
+            else:
+                yield from self._find(v, new_path)
+
+    def _find_condition(self, condition):
+        self._condition = condition
+        return self._find(self.data)
 
     def find_keys(self, key):
         """find all data with path matches key"""
-        self._condition = lambda k, v: k == key
-        return self._find(self.data)
+        return self._find_condition(lambda k, v: k == key)
 
     def find_values(self, value):
         """find all data that matches value and path for data"""
-        self._condition = lambda k, v: v == value
-        return self._find(self.data)
+        return self._find_condition(lambda k, v: v == value)
 
     def find_keyvalues(self, key, value):
         """find all data that matches value and path for data"""
-        self._condition = lambda k, v: (k, v) == (key, value)
-        return self._find(self.data)
+        return self._find_condition(lambda k, v: (k, v) == (key, value))
 
     def find_key(self, key):
         """find key and path for data"""
