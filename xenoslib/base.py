@@ -52,7 +52,8 @@ class NestedData:
                 new_path = f'{path}[{n}]'
                 if self._condition(n, i):
                     yield obj, new_path
-                yield from self._find(i, new_path)
+                else:
+                    yield from self._find(i, new_path)
 
     def find_keys(self, key):
         """find all data with path matches key"""
