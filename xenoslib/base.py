@@ -93,6 +93,15 @@ class NestedData:
             return obj
         return None
 
+class Singleton:
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self, *args, **kwargs):
+        print('init', args, kwargs)
+
 
 class SingletonWithArgs:
     """带参数的单例模式, 通过继承使用，需放到第一继承位"""
