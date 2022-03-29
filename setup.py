@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xenoslib',
-    version='0.1.14.0',
+    version='0.1.14.1',
     packages=find_packages(),
     description="Xenos' common lib",
     long_description_content_type='text/x-rst',

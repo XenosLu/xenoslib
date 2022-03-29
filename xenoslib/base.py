@@ -53,21 +53,21 @@ class NestedData:
             else:
                 yield from self._find(v, new_path)
 
-    def _find_condition(self, condition):
+    def find(self, condition):
         self._condition = condition
         return self._find(self.data)
 
     def find_keys(self, key):
         """find all data with path matches key"""
-        return self._find_condition(lambda k, v: k == key)
+        return self.find(lambda k, v: k == key)
 
     def find_values(self, value):
         """find all data that matches value and path for data"""
-        return self._find_condition(lambda k, v: v == value)
+        return self.find(lambda k, v: v == value)
 
     def find_keyvalues(self, key, value):
         """find all data that matches value and path for data"""
-        return self._find_condition(lambda k, v: (k, v) == (key, value))
+        return self.find(lambda k, v: (k, v) == (key, value))
 
     def find_key(self, key):
         """find key and path for data"""
