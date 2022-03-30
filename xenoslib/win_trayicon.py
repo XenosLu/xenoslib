@@ -282,6 +282,7 @@ class SysTrayIconApp(SysTrayIcon):
             ('Enable Notifications (&N)', self.enable_notifications),
             ('-', '-'),
             ('Clear Console (&C)', partial(os.system, 'cls')),
+            ('Open Containing Folder (&O)', partial(os.system, 'explorer .')),
             ('Restart (&T)', self.restart_script),
             ('Exit (&X)', self.quit),
         )
