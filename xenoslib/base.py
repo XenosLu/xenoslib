@@ -99,9 +99,6 @@ class Singleton:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, *args, **kwargs):
-        print('init', args, kwargs)
-
 
 class SingletonWithArgs:
     """带参数的单例模式, 通过继承使用，需放到第一继承位"""
@@ -138,9 +135,9 @@ class ArgMethodBase:
             parser.print_help()
         else:
             if self.__run__(**vars(args)) is False:
-                print(color('ERROR', 'red'))
+                print(color('ERROR', 'red'), file=sys.stderr)
                 exit(1)
-            print(color('OK', 'green'))
+            print(color('OK', 'green'), file=sys.stderr)
 
     def __run__(self, action, **args):
         """run a certain staticmethod"""

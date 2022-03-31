@@ -54,7 +54,6 @@ class MenuItemThread(MenuItem):
     def __init__(self, daemon=True, checked=True, **kwargs):
         self.kwargs = kwargs
         self.daemon = daemon
-        self.thread = None
         super().__init__(checked=checked)
 
     def start_a_thread(self):
@@ -63,7 +62,7 @@ class MenuItemThread(MenuItem):
 
     @property
     def checked(self):
-        if not self.thread:
+        if not hasattr(self, 'thread'):
             return False
         return self.thread.is_alive()
 
@@ -71,10 +70,9 @@ class MenuItemThread(MenuItem):
     def checked(self, value):
         if value:
             self.start_a_thread()
-        else:
-            if self.checked:
-                self.thread.kill()
-                logger.info(f'{self.thread.name} killed.')
+        elif self.checked:
+            self.thread.kill()
+            logger.info(f'{self.thread.name} killed.')
 
     def action(self):
         super().action()
