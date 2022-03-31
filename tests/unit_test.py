@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
+import sys
 import unittest
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from xenoslib import *
 
 
@@ -25,9 +28,9 @@ class UAMTest(unittest.TestCase):
         print('=' * 79)
 
     def test_1_nesteddata(self):
-        data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a':'b'}]]}}
+        data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
         nesteddata = NestedData(data)
-        
+
         result = nesteddata.find_key('d')
         self.assertEqual(result, 'e')
         result = nesteddata.path
