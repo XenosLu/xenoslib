@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
-from xenoslib import __version__
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'xenoslib'))
+from version import __version__  # noqa
 
 setup(
     name='xenoslib',
