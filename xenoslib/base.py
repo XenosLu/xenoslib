@@ -48,12 +48,17 @@ class NestedData:
             return
         for k, v in iter_obj:
             new_path = f'{path}[{repr(k)}]'
-            if self._condition(k, v):
-                yield obj, new_path
-            else:
-                yield from self._find(v, new_path)
+            try:
+                if self._condition(k, v):
+                    yield obj, new_path
+                    continue
+            except Exception as exc:
+                if not self.ignore_exc:
+                    raise exc
+            yield from self._find(v, new_path)
 
-    def find(self, condition):
+    def find(self, condition, ignore_exc=False):
+        self.ignore_exc = ignore_exc
         self._condition = condition
         return self._find(self.data)
 
@@ -157,10 +162,9 @@ class ArgMethodBase:
             if func.__defaults__ is not None:
                 default_len = len(func.__defaults__)
                 default_values = func.__defaults__
-            required_args = func.__code__.co_varnames[: func.__code__.co_argcount - default_len]
-            optional_args = func.__code__.co_varnames[
-                func.__code__.co_argcount - default_len: func.__code__.co_argcount
-            ]
+            argcount = func.__code__.co_argcount
+            required_args = func.__code__.co_varnames[: argcount - default_len]
+            optional_args = func.__code__.co_varnames[argcount - default_len : argcount]  # noqa
             arg_lists.append(
                 {
                     'action': func_name,
@@ -180,6 +184,7 @@ if __name__ == '__main__':
             {'id': 3},
             {'id': 4},
             [{'id': 3}],
+            'ixxx',
         ]
     }
     n = NestedData(data)
@@ -187,5 +192,6 @@ if __name__ == '__main__':
     from pprint import pprint
 
     pprint(list(n.find_keys('id')))
+    pprint(list(n.find(lambda k, v: 'i' in v, ignore_exc=True)))
     # print(n.find_keyvalue('id', 3))
     # print(n.path)
