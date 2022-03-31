@@ -2,7 +2,7 @@
 > Some commonly useful functions
 
 ## Requirements
-- Python >= 3.5
+- Python >= 3.6
 
 ## Download and Installation
 ### Install from pypi:

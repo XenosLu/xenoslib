@@ -20,7 +20,7 @@ setup(
         'PyYAML>=5.4',
         'requests>=2',
     ],
-    python_requires='>=3.5.0',
+    python_requires='>=3.6',
     extras_require={
         ':sys_platform == "win32"': ['pywin32>=223'],
         ':"linux" in sys_platform': [],
