@@ -5,7 +5,6 @@ import sys
 import logging
 
 import yaml
-import requests
 
 from xenoslib.base import SingletonWithArgs
 
@@ -65,6 +64,8 @@ def del_to_recyclebin(filepath, on_fail_delete=False):
 
 def send_notify(msg, key):
     """send a message for ifttt"""
+    import requests
+
     url = f'https://maker.ifttt.com/trigger/message/with/key/{key}'
     data = {'value1': msg}
     return requests.post(url, data=data)

@@ -9,4 +9,3 @@ else:
 from .base import *  # noqa
 from .dev import *  # noqa
 from .dev import RestartWhenModified as RestartSelfIfUpdated  # deprecated class name countdown 2  # noqa
-from .extend import *  # noqa
