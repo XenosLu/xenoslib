@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from xenoslib import *
+import xenoslib  # noqa
 
 
 class UAMTest(unittest.TestCase):
@@ -29,7 +29,7 @@ class UAMTest(unittest.TestCase):
 
     def test_1_nesteddata(self):
         data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
-        nesteddata = NestedData(data)
+        nesteddata = xenoslib.NestedData(data)
 
         result = nesteddata.find_key('d')
         self.assertEqual(result, 'e')

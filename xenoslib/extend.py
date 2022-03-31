@@ -12,6 +12,7 @@ from xenoslib.base import SingletonWithArgs
 
 class YamlConfig(SingletonWithArgs, dict):
     """yaml格式配置管理"""
+
     def __getattr__(self, key):
         return self.get(key)
 
@@ -61,6 +62,7 @@ def del_to_recyclebin(filepath, on_fail_delete=False):
     )
     return res == 0
 
+
 def send_notify(msg, key):
     """send a message for ifttt"""
     url = f'https://maker.ifttt.com/trigger/message/with/key/{key}'
@@ -76,6 +78,7 @@ class IFTTTLogHandler(logging.Handler):
     iftttloghandler = IFTTTLogHandler(key, level=logging.INFO)
     logging.getLogger(__name__).addHandler(iftttloghandler)
     """
+
     def __init__(self, key, level=logging.CRITICAL, *args, **kwargs):
         self.key = key
         super().__init__(level=level, *args, **kwargs)

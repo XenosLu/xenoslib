@@ -93,6 +93,7 @@ class NestedData:
             return obj
         return None
 
+
 class Singleton:
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, '_instance'):
@@ -158,7 +159,7 @@ class ArgMethodBase:
                 default_values = func.__defaults__
             required_args = func.__code__.co_varnames[: func.__code__.co_argcount - default_len]
             optional_args = func.__code__.co_varnames[
-                func.__code__.co_argcount - default_len : func.__code__.co_argcount
+                func.__code__.co_argcount - default_len: func.__code__.co_argcount
             ]
             arg_lists.append(
                 {
@@ -188,4 +189,3 @@ if __name__ == '__main__':
     pprint(list(n.find_keys('id')))
     # print(n.find_keyvalue('id', 3))
     # print(n.path)
-
