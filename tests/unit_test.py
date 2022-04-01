@@ -3,6 +3,7 @@
 import unittest
 
 import xenoslib
+from xenoslib.extend import YamlConfig
 
 
 class UAMTest(unittest.TestCase):
@@ -42,6 +43,12 @@ class UAMTest(unittest.TestCase):
         self.assertEqual(result, {'d': 'e'})
         result = nesteddata.path
         self.assertEqual(result, "['a']['b'][1][1]['d']")
+
+    def test_2_yamlconfig(self):
+        config = YamlConfig()
+        data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
+        config['data'] = data
+        self.assertEqual(config.data, data)
 
 
 if __name__ == '__main__':
