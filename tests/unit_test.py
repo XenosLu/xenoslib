@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# import os
-# import sys
 import unittest
 
-# sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-import xenoslib  # noqa
+import xenoslib
 
 
 class UAMTest(unittest.TestCase):
