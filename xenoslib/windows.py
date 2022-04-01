@@ -12,12 +12,12 @@ def pause():
 
 
 def timeout(seconds):
-    for second in range(seconds, 0, -1):
+    for second in range(seconds - 1, -1, -1):
         if msvcrt.kbhit():
             break
         print(f'Waiting {second}s , press any key to continue...', end='\r')
         time.sleep(1)
-    print()
+    print()  # make sure the message won't be covered
 
 
 if __name__ == '__main__':

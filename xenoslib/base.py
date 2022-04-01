@@ -142,7 +142,7 @@ class ArgMethodBase:
         else:
             if self.__run__(**vars(args)) is False:
                 print(color('ERROR', 'red'), file=sys.stderr)
-                exit(1)
+                exit(-1)
             print(color('OK', 'green'), file=sys.stderr)
 
     def __run__(self, action, **args):
