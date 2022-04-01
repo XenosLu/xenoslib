@@ -10,26 +10,22 @@ import tty
 
 def pause():
     print('Press any key to continue...')
-    # 获取标准输入(终端)的设置
-    old_settings = termios.tcgetattr(sys.stdin)
-
+    old_settings = termios.tcgetattr(sys.stdin)  # get settings for stdin
     new_settings = old_settings[:]
 
-    # 使用非规范模式(索引3是c_lflag 也就是本地模式)
-    new_settings[3] &= ~termios.ICANON
+    # [3]means c_lflag local mode
+    new_settings[3] &= ~termios.ICANON  # use non-canonical mode
+    new_settings[3] &= ~termios.ECHO  # no echo
 
-    # 关闭回显(输入不会被显示)
-    new_settings[3] &= ~termios.ECHO
-
-    termios.tcsetattr(sys.stdin, termios.TCSANOW, new_settings)  # 使设置生效
-    os.read(sys.stdin.fileno(), 7)  # 读入字符
+    termios.tcsetattr(sys.stdin, termios.TCSANOW, new_settings)  # apply new settings
+    os.read(sys.stdin.fileno(), 7)  # read characters
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)  # recover terminal
 
 
 def timeout(seconds):
     old_settings = termios.tcgetattr(sys.stdin)
     tty.setcbreak(sys.stdin.fileno())
-    for second in range(seconds, 0, -1):
+    for second in range(seconds - 1, -1, -1):
         print(f'Waiting {second}s , press any key to continue...', end='\r')
         break_flag = False
         for i in range(1000):
