@@ -22,7 +22,7 @@ def color(value, color_name='blue'):
     """
     if sys.platform == 'win32':
         return value
-    color_code = {
+    colors = {
         'red': 31,
         'green': 32,
         'yellow': 33,
@@ -30,7 +30,7 @@ def color(value, color_name='blue'):
         'magenta': 35,
         'cyan': 36,
     }
-    return '\033[1;{code}m{value}\033[0m'.format(code=color_code[color_name], value=value)
+    return f'\033[1;{colors[color_name]}m{value}\033[0m'
 
 
 class NestedData:
