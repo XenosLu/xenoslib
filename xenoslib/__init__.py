@@ -9,6 +9,6 @@ else:
     from .linux import *  # noqa
 from .base import *  # noqa
 from .dev import *  # noqa
-from .dev import (
+from .dev import (  # noqa
     RestartWhenModified as RestartSelfIfUpdated,
-)  # deprecated class name countdown 1  # noqa
+)  # deprecated class name countdown 1
