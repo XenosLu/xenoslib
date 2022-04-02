@@ -1,3 +1,4 @@
+[![Python CI](https://github.com/XenosLu/xenoslib/actions/workflows/main.yml/badge.svg)](https://github.com/XenosLu/xenoslib/actions/workflows/main.yml)
 # Introduce
 > Some commonly useful functions
 
