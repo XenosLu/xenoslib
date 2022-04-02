@@ -10,16 +10,20 @@ from xenoslib.base import SingletonWithArgs
 
 
 class YamlConfig(SingletonWithArgs, dict):
-    """yaml格式配置管理"""
+    """config in yaml, can work as a dict"""
 
     def __getattr__(self, key):
         return self.get(key)
 
     def __setattr__(self, name, value):
-        if name.startswith('_'):
-            super().__setattr__(name, value)
-        else:
-            self[name] = value
+        try:
+            getattr(super(), name)
+        except AttributeError as exc:
+            if str(exc).startswith("'super' object has no attribute "):
+                self[name] = value
+                return
+            raise exc
+        raise AttributeError(f"'{__class__.__name__}' object attribute '{name}' is read-only")
 
     def __str__(self):
         return yaml.safe_dump(self.copy(), allow_unicode=True)
@@ -27,7 +31,7 @@ class YamlConfig(SingletonWithArgs, dict):
     def __init__(self, config_file='config.yml'):
         if self._config_file:
             return
-        self._config_file = config_file
+        super().__setattr__('_config_file', config_file)
         if os.path.exists(config_file):
             with open(config_file, encoding='utf-8') as r:
                 self.update(yaml.safe_load(r))
@@ -92,21 +96,11 @@ class IFTTTLogHandler(logging.Handler):
 
 
 if __name__ == '__main__':
+    # import glob
+    # for path in glob.iglob('*.yml'):
+        # config = YamlConfig(path)
+        # print(config)
+        # config.save()
     config = YamlConfig()
-    print('-'*79)
-    config2 = YamlConfig()
-    config.update(
-        {
-            'a': 'va',
-            'b': 'vb',
-        }
-    )
-    # print(config.keys())
-    print(id(config))
-    print(id(config2))
-    config.a='t'
+    config.on = 'test'
     print(config)
-    print(config2)
-    # print(.keys())
-    # config.__eq__ = 'a'
-    # print(config.__eq__)

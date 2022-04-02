@@ -113,7 +113,7 @@ class SingletonWithArgs:
         arg = f'{args}{kwargs}'
         if not hasattr(cls, '_instances'):
             cls._instances = {}
-        if not cls._instances.get(arg):
+        if cls._instances.get(arg) is None:
             cls._instances[arg] = super().__new__(cls)
         return cls._instances[arg]
 
@@ -193,5 +193,3 @@ if __name__ == '__main__':
 
     pprint(list(n.find_keys('id')))
     pprint(list(n.find(lambda k, v: 'i' in v, ignore_exc=True)))
-    # print(n.find_keyvalue('id', 3))
-    # print(n.path)

@@ -18,4 +18,3 @@ def timeout(seconds):
         print(f'Waiting {second}s , press any key to continue...', end='\r')
         time.sleep(1)
     print()  # make sure the message won't be covered
-

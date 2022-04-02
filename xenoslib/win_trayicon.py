@@ -94,7 +94,6 @@ class MenuItemConsole(MenuItem):
                 win32gui.SetForegroundWindow(self.hconsole)
             except Exception as exc:
                 logger.debug(exc, exc_info=True)
-                return
 
     def remove_close_button_from_console(self):
         hmenu = win32gui.GetSystemMenu(self.hconsole, 0)
