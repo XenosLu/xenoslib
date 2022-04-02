@@ -92,5 +92,21 @@ class IFTTTLogHandler(logging.Handler):
 
 
 if __name__ == '__main__':
-    key = ''
-    print(send_notify('test', key))
+    config = YamlConfig()
+    print('-'*79)
+    config2 = YamlConfig()
+    config.update(
+        {
+            'a': 'va',
+            'b': 'vb',
+        }
+    )
+    # print(config.keys())
+    print(id(config))
+    print(id(config2))
+    config.a='t'
+    print(config)
+    print(config2)
+    # print(.keys())
+    # config.__eq__ = 'a'
+    # print(config.__eq__)

@@ -19,6 +19,3 @@ def timeout(seconds):
         time.sleep(1)
     print()  # make sure the message won't be covered
 
-
-if __name__ == '__main__':
-    timeout(1)
