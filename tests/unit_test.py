@@ -25,7 +25,7 @@ class UAMTest(unittest.TestCase):
         """run after all tests"""
         print('=' * 79)
 
-    def test_1_nesteddata(self):
+    def test_1_NestedData(self):
         data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
         nesteddata = xenoslib.NestedData(data)
 
@@ -44,11 +44,31 @@ class UAMTest(unittest.TestCase):
         result = nesteddata.path
         self.assertEqual(result, "['a']['b'][1][1]['d']")
 
-    def test_2_yamlconfig(self):
+    def test_2_Singleton(self):
+        class TestSingleton(xenoslib.Singleton):
+            pass
+
+        obj_a = TestSingleton()
+        obj_b = TestSingleton()
+        self.assertEqual(id(obj_a), id(obj_b))
+
+    def test_3_SingletonWithArgs(self):
+        class TestSingletonWithArgs(xenoslib.SingletonWithArgs):
+            pass
+
+        obj_a = TestSingletonWithArgs('a')
+        obj_b = TestSingletonWithArgs('b')
+        obj_c = TestSingletonWithArgs('a')
+        self.assertNotEqual(id(obj_a), id(obj_b))
+        self.assertEqual(id(obj_a), id(obj_c))
+
+    def test_4_yamlconfig(self):
         config = YamlConfig()
+        config2 = YamlConfig()
         data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
         config['data'] = data
-        self.assertEqual(config.data, data)
+        self.assertEqual(config2.data, data)
+        self.assertEqual(id(config), id(config2))
 
 
 if __name__ == '__main__':
