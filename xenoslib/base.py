@@ -42,7 +42,7 @@ class NestedData:
     def _find(self, obj, path=''):
         if isinstance(obj, dict):
             iter_obj = obj.items()
-        elif isinstance(obj, list) or isinstance(obj, tuple):
+        elif isinstance(obj, (list, tuple)):
             iter_obj = enumerate(obj)
         else:
             return
