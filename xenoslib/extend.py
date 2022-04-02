@@ -98,9 +98,9 @@ class IFTTTLogHandler(logging.Handler):
 if __name__ == '__main__':
     # import glob
     # for path in glob.iglob('*.yml'):
-        # config = YamlConfig(path)
-        # print(config)
-        # config.save()
+    # config = YamlConfig(path)
+    # print(config)
+    # config.save()
     config = YamlConfig()
     config.on = 'test'
     print(config)
