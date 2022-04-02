@@ -110,7 +110,7 @@ class SingletonWithArgs:
     """带参数的单例模式, 通过继承使用，需放到第一继承位"""
 
     def __new__(cls, *args, **kwargs):
-        arg = '%s%s' % (args, kwargs)
+        arg = f'{args}{kwargs}'
         if not hasattr(cls, '_instances'):
             cls._instances = {}
         if not cls._instances.get(arg):
