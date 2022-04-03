@@ -38,10 +38,10 @@ jobs:
         run: |
           git config --local user.email "xenos.lu@gmail.com"
           git config --local user.name "${{ github.actor }}"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          pip install black
+          # git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          python3 -m pip install black
           black -S -l 100 .
-          git commit -a -m 'Auto Format with Black'
+          git commit -a -m 'format: Auto Format with Black'
           git push
       - name: Lint with flake8 after format
         if: steps.lint1.outputs.failure == 'true'
