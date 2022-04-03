@@ -186,6 +186,7 @@ def inject(modulepath, obj_name, obj):
         m = m[name].__dict__
     m[obj_name] = obj
 
+
 if __name__ == '__main__':
     data = {
         'd': [
