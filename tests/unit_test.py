@@ -6,7 +6,7 @@ import xenoslib
 from xenoslib.extend import YamlConfig
 
 
-class UAMTest(unittest.TestCase):
+class UnitTest(unittest.TestCase):
     def setUp(self):
         """run before each test"""
         print('*' * 79)
