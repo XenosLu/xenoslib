@@ -123,28 +123,8 @@ jobs:
       run: |
         pytest
 
-  tag:
-
-    runs-on: ubuntu-latest
-    outputs: 
-      tagged: ${{ steps.tag.outputs.tagged }}
-    needs: [tests, tests-docker]
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-      - name: Try tag
-        id: tag
-        run: |
-          git config --local user.email "xenos.lu@gmail.com"
-          git config --local user.name "${{ github.actor }}"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git tag v$(python3 setup.py --version)
-          git push --tags && echo "::set-output name=tagged::true" || echo skipped.
-
   publish:
-    needs: tag
-    if: needs.tag.outputs.tagged == 'true'
+    needs: [tests, tests-docker]
     uses: XenosLu/xenoslib/.github/workflows/publish.yml@master
     secrets:
       PYPI_API_TOKEN : ${{ secrets.PYPI_API_TOKEN  }}
