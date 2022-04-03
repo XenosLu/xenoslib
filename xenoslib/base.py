@@ -3,6 +3,7 @@
 import argparse
 import sys
 import time
+import inspect
 
 
 def sleep(seconds, mute=False):
@@ -176,15 +177,21 @@ class ArgMethodBase:
         return arg_lists
 
 
-def inject(modulepath, obj_name, obj):
-    """inject a module obj
-    usage: inject('xenoslib.base', 'color', color)
-    """
-    modules = modulepath.split('.')
-    m = sys.modules
-    for name in modules:
-        m = m[name].__dict__
-    m[obj_name] = obj
+def monkey_patch(module, obj_name, obj, package=None):
+    """recursively patch obj in module"""
+    if isinstance(module, str):
+        # to-do if '.' in module  # seems no need to bother
+        module = sys.modules[module]
+    if not inspect.ismodule(module):
+        raise TypeError(f"'{module}' is not module")
+    if package is None:
+        package = module.__package__
+    if obj_name in module.__dict__:
+        module.__dict__[obj_name] = obj
+        print(f'Monkey patched <{obj_name}> in <{module.__name__}>', file=sys.stderr)
+    for k, v in module.__dict__.items():
+        if inspect.ismodule(v) and v.__package__ == package:
+            monkey_patch(v, obj_name, obj, package)
 
 
 if __name__ == '__main__':

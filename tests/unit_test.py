@@ -70,10 +70,10 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
 
-    def test_5_inject(self):
-        xenoslib.inject('xenoslib.version', '__version__', 'injected version')
+    def test_5_monkey_patch(self):
+        self.assertNotEqual(xenoslib.__version__, 'injected version')
+        xenoslib.monkey_patch('xenoslib', '__version__', 'injected version')
         self.assertEqual(xenoslib.version.__version__, 'injected version')
-        xenoslib.inject('xenoslib', '__version__', 'injected version')
         self.assertEqual(xenoslib.__version__, 'injected version')
 
 
