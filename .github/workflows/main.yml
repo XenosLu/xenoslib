@@ -16,40 +16,7 @@ on:
 jobs:
 
   lint:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install flake8
-      - name: Lint with flake8
-        id: lint1
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics || echo "::set-output name=failure::true"
-      - name: Try Format
-        if: steps.lint1.outputs.failure == 'true'
-        run: |
-          git config --local user.email "xenos.lu@gmail.com"
-          git config --local user.name "${{ github.actor }}"
-          # git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          python3 -m pip install black
-          black -S -l 100 .
-          git commit -a -m 'format: Auto Format with Black'
-          git push
-      - name: Lint with flake8 after format
-        if: steps.lint1.outputs.failure == 'true'
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
+    uses: XenosLu/xenoslib/.github/workflows/lint.yml@master
 
   tests:
     needs: lint
