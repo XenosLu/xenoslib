@@ -1,0 +1,86 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python CI
+
+on:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+  workflow_call:
+
+jobs:
+
+  tests:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+       os:
+       - ubuntu-latest
+       - ubuntu-18.04
+       - macos-latest
+       - windows-latest
+       python:
+       - '3.6'
+       - '3.7'
+       - '3.8'
+       - '3.9'
+       - '3.10'
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pytest
+        if [ -f setup.py ]; then python3 -m pip install .; fi
+        if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt; fi
+      shell: bash
+    - name: Test with pytest
+      run: |
+        pytest
+
+  tests-docker:
+
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ contains(matrix.image, 'rc') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+        - python:3.6-alpine
+        - python:3.7-alpine
+        - python:3.8-alpine
+        - python:3.9-alpine
+        - python:3.10-alpine
+        - python:3.11-rc-alpine
+        - python:3.6-slim
+        - python:3.7-slim
+        - python:3.8-slim
+        - python:3.9-slim
+        - python:3.10-slim
+        - python:3.11-rc-slim
+
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v3
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install pytest
+        if [ -f setup.py ]; then python3 -m pip install .; fi
+        if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt; fi
+    - name: Test with pytest
+      run: |
+        pytest
