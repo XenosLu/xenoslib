@@ -70,6 +70,10 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
 
+    def test_5_inject(self):
+        xenoslib.inject('xenoslib.version','__version__', 'injected, version')
+        self.assertEqual(xenoslib.version.__version__, 'injected, version')
+
 
 if __name__ == '__main__':
     unittest.main()  # run all unit tests

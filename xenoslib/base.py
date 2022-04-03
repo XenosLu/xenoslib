@@ -176,6 +176,16 @@ class ArgMethodBase:
         return arg_lists
 
 
+def inject(modulepath, obj_name, obj):
+    """inject a module obj
+    usage: inject('xenoslib.base', 'color', color)
+    """
+    modules = modulepath.split('.')
+    m = sys.modules
+    for name in modules:
+        m = m[name].__dict__
+    m[obj_name] = obj
+
 if __name__ == '__main__':
     data = {
         'd': [
