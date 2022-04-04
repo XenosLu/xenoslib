@@ -4,10 +4,9 @@
 name: Python CI
 
 on:
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  
+
   workflow_call:
 
 jobs:
@@ -41,8 +40,8 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install pytest
-        if [ -f setup.py ]; then python3 -m pip install .; fi
-        if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt; fi
+        [ -f setup.py ] && python3 -m pip install .
+        [ -f requirements.txt ] && python3 -m pip install -r requirements.txt
       shell: bash
     - name: Test with pytest
       run: |
@@ -79,8 +78,8 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install pytest
-        if [ -f setup.py ]; then python3 -m pip install .; fi
-        if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt; fi
+        [ -f setup.py ] && python3 -m pip install .
+        [ -f requirements.txt ] && python3 -m pip install -r requirements.txt
     - name: Test with pytest
       run: |
         pytest
