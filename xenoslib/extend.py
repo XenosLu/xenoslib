@@ -9,6 +9,9 @@ import yaml
 from xenoslib.base import SingletonWithArgs
 
 
+logger = logging.getLogger(__name__)
+
+
 class YamlConfig(SingletonWithArgs, dict):
     """config in yaml, can work as a dict"""
 
@@ -41,6 +44,37 @@ class YamlConfig(SingletonWithArgs, dict):
         with open(self._config_file, 'w', encoding='utf-8') as w:
             w.write(data)
             # yaml.safe_dump(self.copy(), w, allow_unicode=True)
+
+
+class RequestAdapter:
+    def request(self, method, path, *args, **kwargs):
+        url = f'{self.base_url}/{path}'
+        logger.debug(url)
+        response = self.session.request(method, url, *args, **kwargs)
+        response.raise_for_status()
+        try:
+            return response.json()
+        except Exception as exc:
+            logger.debug(exc)
+            logger.debug(response)
+            return response.text
+
+    def get(self, path, *args, **kwargs):
+        return self.request('get', path, *args, **kwargs)
+
+    def post(self, path, *args, **kwargs):
+        return self.request('post', path, *args, **kwargs)
+
+    def put(self, path, *args, **kwargs):
+        return self.request('put', path, *args, **kwargs)
+
+    def delete(self, path, *args, **kwargs):
+        return self.request('delete', path, *args, **kwargs)
+
+    def __init__(self):
+        import requests
+
+        self.session = requests.Session()
 
 
 def del_to_recyclebin(filepath, on_fail_delete=False):
