@@ -16,22 +16,14 @@ def sleep(seconds, mute=False):
 
 
 def color(value, color_name='blue'):
-    """
-    return text with color, default in blue.
-    "Why is it blue?"
-    "It's always blue."
-    """
-    if sys.platform == 'win32':
+    """if have colorama then use it"""
+    try:
+        from colorama import Fore, Style, init
+
+        init()
+        value = getattr(Fore, color_name.upper()) + Style.BRIGHT + value + Fore.RESET
+    finally:
         return value
-    colors = {
-        'red': 31,
-        'green': 32,
-        'yellow': 33,
-        'blue': 34,
-        'magenta': 35,
-        'cyan': 36,
-    }
-    return f'\033[1;{colors[color_name]}m{value}\033[0m'
 
 
 class NestedData:
@@ -121,6 +113,7 @@ class SingletonWithArgs:
 
 class ArgMethodBase:
     """auto generator arguments by static methods"""
+
     def __init__(self, epilog=None):
         """initialize arguments parser"""
         parser = argparse.ArgumentParser(
