@@ -76,5 +76,6 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
 
+
 if __name__ == '__main__':
     unittest.main()  # run all unit tests
