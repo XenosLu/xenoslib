@@ -106,11 +106,11 @@ class OneDrive(RequestAdapter):
 
 
 class ArgMethod(ArgMethodBase):
-    """onedrive util"""
+    """onedrive tenant util"""
 
     @staticmethod
     def upload(username, password, filename, folder='/'):
-        """check UAM and PAM requests"""
+        """upload files to onedrive, not support folder yet"""
         one = OneDrive(username, password)
         if '*' in filename:
             import glob
