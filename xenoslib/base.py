@@ -129,34 +129,32 @@ class ArgMethodBase:
             epilog=epilog,
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
-        subparsers = parser.add_subparsers(title='action', dest='action')
+        subparsers = parser.add_subparsers(title='commands', dest='commands')
         for arg_map in self.__get_arg_lists__():
-            sub_parser = subparsers.add_parser(arg_map['action'], help=arg_map['help'])
+            sub_parser = subparsers.add_parser(arg_map['command'], help=arg_map['help'])
             for arg in arg_map['required_args']:
                 sub_parser.add_argument(arg)
-            for arg, value in arg_map['zip_optional_args']:
+            for arg, value in arg_map['optional_args']:
                 sub_parser.add_argument('--%s' % arg, type=type(value), default=value)
 
         args = parser.parse_args()
-        if args.action is None:
+        if args.commands is None:
             parser.print_help()
+        elif self.__run_command__(**vars(args)) is False:
+            print(color('ERROR', 'red'), file=sys.stderr)
+            exit(-1)
         else:
-            if self.__run__(**vars(args)) is False:
-                print(color('ERROR', 'red'), file=sys.stderr)
-                exit(-1)
             print(color('OK', 'green'), file=sys.stderr)
 
-    def __run__(self, action, **args):
+    def __run_command__(self, command, **args):
         """run a certain staticmethod"""
-        return getattr(self, action)(**args)
+        return getattr(self, command)(**args)
 
     def __get_arg_lists__(self):
         """get arguments info lists from self class staticmethods"""
-        arg_lists = []
-
-        for func_name in dir(self):
-            func = getattr(self, func_name)
-            if func_name.startswith('__') or not callable(func):
+        for obj_name in dir(self):
+            func = getattr(self, obj_name)
+            if obj_name.startswith('__') or not callable(func):
                 continue
             default_len = 0
             default_values = []
@@ -166,15 +164,12 @@ class ArgMethodBase:
             argcount = func.__code__.co_argcount
             required_args = func.__code__.co_varnames[: argcount - default_len]
             optional_args = func.__code__.co_varnames[argcount - default_len : argcount]  # noqa
-            arg_lists.append(
-                {
-                    'action': func_name,
-                    'help': func.__doc__,
-                    'required_args': required_args,
-                    'zip_optional_args': zip(optional_args, default_values),
-                }
-            )
-        return arg_lists
+            yield {
+                'command': obj_name,
+                'help': func.__doc__,
+                'required_args': required_args,
+                'optional_args': zip(optional_args, default_values),
+            }
 
 
 def monkey_patch(module, obj_name, obj, package=None):
