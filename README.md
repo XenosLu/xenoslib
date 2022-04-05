@@ -20,19 +20,6 @@ This project include some common codes.
 
 ### base features
 
-turn text with color if - windows then do nothing
-
-`usage: color(value, color_name='blue')`
-
-sample:
-```
->>> import xenoslib
->>> xenoslib.color('blue')
-'\x1b[1;34mblue\x1b[0m'
->>> print(xenoslib.color('blue'))
-blue  # only turn blue in linux, in windows it will do nothing
-```
-
 to-do:
 
 Finish the following docs...
