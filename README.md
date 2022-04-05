@@ -16,16 +16,62 @@ This project include some common codes.
 
     pip3 install git+https://github.com/XenosLu/xenoslib.git
 
-## Use
+## Usage
 
-### base features
+### Base features
 
+#### ArgMethodBase
+```
+# save as cli.py
+from xenoslib import ArgMethodBase
+class ArgMethod(ArgMethodBase):
+    """cli utils"""
+
+    @staticmethod
+    def test(a, b, option='no'):
+        """test"""
+        print(a, b, option)
+
+if __name__ == '__main__':
+    ArgMethod()
+```
+```shell
+root@bullseye:~# python cli.py
+usage: cli.py [-h] {test} ...
+
+cli utils
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+commands:
+  {test}
+    test      test
+```
+```shell
+root@bullseye:~# python cli.py test -h
+usage: cli.py test [-h] [--option OPTION] a b
+
+positional arguments:
+  a
+  b
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --option OPTION
+```
+```shell
+root@bullseye:~# python cli.py test aa bb --option yes
+aa bb yes
+OK
+```
+#### sleep
 ```
 >>> from xenoslib import sleep
 >>> sleep(5)
 ETA 5/4  s
 ```
-
+#### NestedData
 ```
 import xenoslib
 data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
@@ -46,8 +92,7 @@ self.assertEqual(result, {'d': 'e'})
 result = nesteddata.path
 self.assertEqual(result, "['a']['b'][1][1]['d']")
 ```
-
-
+#### TestSingleton
 ```
 class TestSingleton(xenoslib.Singleton):
     pass
@@ -56,6 +101,7 @@ obj_a = TestSingleton()
 obj_b = TestSingleton()
 self.assertEqual(id(obj_a), id(obj_b))
 ```
+#### SingletonWithArgs
 ```
 class TestSingletonWithArgs(xenoslib.SingletonWithArgs):
     pass
@@ -66,7 +112,7 @@ obj_c = TestSingletonWithArgs('a')
 self.assertNotEqual(id(obj_a), id(obj_b))
 self.assertEqual(id(obj_a), id(obj_c))
 ```
-
+#### monkey_patch
 ```
 self.assertNotEqual(xenoslib.__version__, 'injected version')
 xenoslib.monkey_patch('xenoslib', '__version__', 'injected version')
@@ -75,7 +121,7 @@ self.assertEqual(xenoslib.__version__, 'injected version')
 ```
 
 
-### extend
+### xenoslib.extend
 
 ```
 from xenoslib.extend import YamlConfig
@@ -87,7 +133,7 @@ self.assertEqual(config2.data, data)
 self.assertEqual(id(config), id(config2))
 ```
 
-### dev
+### xenoslib.dev
 
 - RestartWhenModified()
 
