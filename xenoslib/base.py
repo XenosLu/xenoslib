@@ -15,13 +15,13 @@ def sleep(seconds, mute=False):
         time.sleep(1)
 
 
-def color(value, color_name='blue'):
+def color(value, color_name='BLUE'):
     """if have colorama then use it"""
     try:
         from colorama import Fore, Style, init
 
         init()
-        value = getattr(Fore, color_name.upper()) + Style.BRIGHT + value + Fore.RESET
+        value = getattr(Fore, color_name) + Style.BRIGHT + value + Fore.RESET
     finally:
         return value
 
@@ -133,10 +133,10 @@ class ArgMethodBase:
         if args.command is None:
             parser.print_help()
         elif self.__run_command__(**vars(args)) is False:
-            print(color('ERROR', 'red'), file=sys.stderr)
+            print(color('ERROR', 'RED'), file=sys.stderr)
             exit(-1)
         else:
-            print(color('OK', 'green'), file=sys.stderr)
+            print(color('OK', 'GREEN'), file=sys.stderr)
 
     def __run_command__(self, command, **args):
         """run a certain staticmethod"""
