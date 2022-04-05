@@ -121,7 +121,6 @@ class SingletonWithArgs:
 
 class ArgMethodBase:
     """auto generator arguments by static methods"""
-
     def __init__(self, epilog=None):
         """initialize arguments parser"""
         parser = argparse.ArgumentParser(
@@ -129,7 +128,7 @@ class ArgMethodBase:
             epilog=epilog,
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
-        subparsers = parser.add_subparsers(title='commands', dest='commands')
+        subparsers = parser.add_subparsers(title='commands', dest='command')
         for arg_map in self.__get_arg_lists__():
             sub_parser = subparsers.add_parser(arg_map['command'], help=arg_map['help'])
             for arg in arg_map['required_args']:
@@ -138,7 +137,7 @@ class ArgMethodBase:
                 sub_parser.add_argument('--%s' % arg, type=type(value), default=value)
 
         args = parser.parse_args()
-        if args.commands is None:
+        if args.command is None:
             parser.print_help()
         elif self.__run_command__(**vars(args)) is False:
             print(color('ERROR', 'red'), file=sys.stderr)
