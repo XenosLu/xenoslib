@@ -2,7 +2,7 @@
 ## Introduce
 [![Python CI](https://github.com/XenosLu/xenoslib/actions/workflows/main.yml/badge.svg)](https://github.com/XenosLu/xenoslib/actions/workflows/main.yml)
 
-This project include some common codes.
+This project provide some common utilities code.
 
 ## Requirements
 - Python >= 3.6
