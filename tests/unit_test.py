@@ -62,20 +62,19 @@ class UnitTest(unittest.TestCase):
         self.assertNotEqual(id(obj_a), id(obj_b))
         self.assertEqual(id(obj_a), id(obj_c))
 
-    def test_4_yamlconfig(self):
+    def test_4_monkey_patch(self):
+        self.assertNotEqual(xenoslib.__version__, 'injected version')
+        xenoslib.monkey_patch('xenoslib', '__version__', 'injected version')
+        self.assertEqual(xenoslib.version.__version__, 'injected version')
+        self.assertEqual(xenoslib.__version__, 'injected version')
+
+    def test_5_yamlconfig(self):
         config = YamlConfig()
         config2 = YamlConfig()
         data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
         config['data'] = data
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
-
-    def test_5_monkey_patch(self):
-        self.assertNotEqual(xenoslib.__version__, 'injected version')
-        xenoslib.monkey_patch('xenoslib', '__version__', 'injected version')
-        self.assertEqual(xenoslib.version.__version__, 'injected version')
-        self.assertEqual(xenoslib.__version__, 'injected version')
-
 
 if __name__ == '__main__':
     unittest.main()  # run all unit tests
