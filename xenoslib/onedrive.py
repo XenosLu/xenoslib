@@ -100,20 +100,30 @@ class OneDrive(RequestAdapter):
             return res.json()
 
 
+class OneUploader(OneDrive):
+    def upload(self, filepath, folder='/'):
+        print(f'Uploading {filepath}...')
+        return super().upload(filepath, folder)
+
+
 class ArgMethod(ArgMethodBase):
     """onedrive tenant util"""
 
     @staticmethod
-    def upload(username, password, filename, folder='/'):
+    def upload(username, password, filepath, folder='/'):
         """upload files to onedrive, not support folder yet"""
-        one = OneDrive(username, password)
-        if '*' in filename:
-            import glob
+        import glob
 
-            for filename in glob.glob(filename):
+        one = OneUploader(username, password)
+        if '*' in filepath:
+            for filename in glob.glob(filepath):
                 print(one.upload(filename, folder=folder))
+        elif os.path.isdir(filepath):
+            for filename in glob.glob(f'{filepath}/**', recursive=True):
+                if os.path.isfile(filename):
+                    print(one.upload(filename, folder=folder))
         else:
-            print(one.upload(filename, folder=folder))
+            print(one.upload(filepath, folder=folder))
 
 
 if __name__ == '__main__':
