@@ -24,7 +24,7 @@ setup(
     extras_require={
         ':sys_platform == "win32"': ['pywin32>=225'],
         ':"linux" in sys_platform': [],
-        ':python_version >= "3.10"': ['requests==2.3'],
+        ':python_version >= "3.10"': ['requests==2.15'],  # requests==2.3
         ':python_version <= "3.9"': ['requests==2.0'],
         'colorful': ['colorama>=0.4.4'],  # win32
     },
