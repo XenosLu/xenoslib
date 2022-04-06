@@ -15,15 +15,36 @@ def sleep(seconds, mute=False):
         time.sleep(1)
 
 
+def simple_color(value, color_name='BLUE'):
+    """
+    return text with color, default in blue.
+    "Why is it blue?"
+    "It's always blue."
+    """
+    if sys.platform == 'win32':
+        return value
+    colors = {
+        'RED': 31,
+        'GREEN': 32,
+        'YELLOW': 33,
+        'BLUE': 34,
+        'MAGENTA': 35,
+        'CYAN': 36,
+    }
+    return f'\033[1;{colors[color_name]}m{value}\033[0m'
+
+
 def color(value, color_name='BLUE'):
     """if have colorama then use it"""
-    try:
-        from colorama import Fore, Style, init
+    if sys.platform == 'win32':
+        try:
+            from colorama import Fore, Style, init
 
-        init()
-        value = getattr(Fore, color_name) + Style.BRIGHT + value + Fore.RESET
-    finally:
-        return value
+            init()
+            value = getattr(Fore, color_name) + Style.BRIGHT + value + Fore.RESET
+        finally:
+            return value
+    return simple_color(value, color_name)
 
 
 class NestedData:
