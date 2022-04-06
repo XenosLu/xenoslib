@@ -23,7 +23,7 @@ setup(
     python_requires='>=3.6',
     extras_require={
         ':sys_platform == "win32"': ['pywin32>=225'],
-        ':python_version >= "3.10"': ['requests==2.18'],  # 2.15.1 - 2.21
+        ':python_version >= "3.10"': ['requests==2.19'],  # 2.18 - 2.21
         ':python_version <= "3.9"': ['requests>=2.0.0'],
         'colorful:sys_platform == "win32"': ['colorama>=0.4.4'],
         ':"linux" in sys_platform': [],
