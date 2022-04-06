@@ -17,12 +17,12 @@ setup(
     author_email='xenos.lu@gmail.com',
     url='https://github.com/XenosLu/xenoslib.git',
     install_requires=[
-        'PyYAML>=5.4',
-        'requests>=2',
+        'PyYAML==5.4',
+        'requests==2',
     ],
     python_requires='>=3.6',
     extras_require={
-        ':sys_platform == "win32"': ['pywin32>=223'],
+        ':sys_platform == "win32"': ['pywin32==228'],
         ':"linux" in sys_platform': [],
     },
 )
