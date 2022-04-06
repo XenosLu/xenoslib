@@ -74,13 +74,8 @@ class OneDrive(RequestAdapter):
         """
         https://docs.microsoft.com/zh-cn/onedrive/developer/rest-api/api/driveitem_createuploadsession?view=odsp-graph-online
         """
-        data = {  # noqa
-            "@microsoft.graph.conflictBehavior": "rename | fail | replace",
-            "description": "description",
-            "fileSystemInfo": {"@odata.type": "microsoft.graph.fileSystemInfo"},
-            "name": "filename.txt",
-        }  # optional, not used
-        res = self.post(f'/me/drive/root:{folder}/{filepath}:/createUploadSession')
+        data = {"item": {"@microsoft.graph.conflictBehavior": "rename"}}
+        res = self.post(f'/me/drive/root:{folder}/{filepath}:/createUploadSession', json=data)
         return res.get('uploadUrl')
 
     def upload(self, filepath, folder='/'):
