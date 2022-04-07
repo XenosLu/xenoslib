@@ -127,9 +127,7 @@ class SingletonWithArgs:
         arg = f'{args}{kwargs}'
         if not hasattr(cls, '_instances'):
             cls._instances = {}
-        if cls._instances.get(arg) is None:
-            cls._instances[arg] = super().__new__(cls)
-        return cls._instances[arg]
+        return cls._instances.setdefault(arg, super().__new__(cls))
 
 
 class ArgMethodBase:
