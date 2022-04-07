@@ -3,6 +3,8 @@
 import unittest
 
 import xenoslib
+import xenoslib.dev
+import xenoslib.onedrive
 from xenoslib.extend import YamlConfig
 
 
