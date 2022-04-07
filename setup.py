@@ -5,17 +5,19 @@ import os
 import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'xenoslib'))
-from version import __version__  # noqa
+import about  # noqa
+# from about import __version__  # noqa
 
 setup(
-    name='xenoslib',
-    version=__version__,
+    name=about.__title__,
+    version=about.__version__,
     packages=find_packages(),
-    description="Xenos' common lib",
-    long_description_content_type='text/x-rst',
-    author='Xenocider',
-    author_email='xenos.lu@gmail.com',
-    url='https://github.com/XenosLu/xenoslib.git',
+    description=about.__description__,
+    long_description_content_type='text/markdown',
+    author=about.__author__,
+    author_email=about.__author_email__,
+    license=about.__license__,
+    url=about.__url__,
     install_requires=[
         'PyYAML>=5.4',
     ],

@@ -1,6 +1,6 @@
 import sys
 
-from .version import __version__  # noqa
+from .about import __version__  # noqa
 
 if sys.platform == 'win32':
     from .windows import *  # noqa
