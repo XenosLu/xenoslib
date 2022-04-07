@@ -65,7 +65,7 @@ class UnitTest(unittest.TestCase):
     def test_4_monkey_patch(self):
         self.assertNotEqual(xenoslib.__version__, 'injected version')
         xenoslib.monkey_patch('xenoslib', '__version__', 'injected version')
-        self.assertEqual(xenoslib.version.__version__, 'injected version')
+        self.assertEqual(xenoslib.about.__version__, 'injected version')
         self.assertEqual(xenoslib.__version__, 'injected version')
 
     def test_5_yamlconfig(self):
