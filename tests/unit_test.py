@@ -75,6 +75,7 @@ class UnitTest(unittest.TestCase):
         config2 = YamlConfig()
         data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
         config['data'] = data
+        self.assertEqual(str(config), 'data:\n  a:\n    b:\n    - c\n    - - 0\n      - d: e\n      - a: b\n')
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
 

@@ -7,19 +7,18 @@ import logging
 import yaml
 import requests
 
-from xenoslib.base import SingletonWithArgs
-
 
 logger = logging.getLogger(__name__)
 
 
-class YamlConfig(SingletonWithArgs, dict):
+class YamlConfig(dict):
     """config in yaml, can work as a dict"""
 
     def __getattr__(self, key):
         return self.get(key)
 
     def __setattr__(self, name, value):
+        print(name)
         try:
             getattr(super(), name)
         except AttributeError as exc:
@@ -32,17 +31,23 @@ class YamlConfig(SingletonWithArgs, dict):
     def __str__(self):
         return yaml.safe_dump(self.copy(), allow_unicode=True)
 
-    def __init__(self, config_file='config.yml'):
-        if self._config_file:
-            return
-        super().__setattr__('_config_file', config_file)
-        if os.path.exists(config_file):
-            with open(config_file, encoding='utf-8') as r:
-                self.update(yaml.safe_load(r))
+    def __repr__(self):
+        return repr(str(self))
+
+    def __new__(cls, conf_path='config.yml', *args, **kwargs):
+        if not hasattr(cls, '_instances'):
+            cls._instances = {}
+        if cls._instances.get(conf_path) is None:
+            cls._instances[conf_path] = super().__new__(cls)
+            super().__setattr__(cls._instances[conf_path], '_conf_path', conf_path)
+            if os.path.exists(conf_path):
+                with open(conf_path, encoding='utf-8') as r:
+                    cls._instances[conf_path].update(yaml.safe_load(r))
+        return cls._instances[conf_path]
 
     def save(self):
         data = str(self)
-        with open(self._config_file, 'w', encoding='utf-8') as w:
+        with open(self._conf_path, 'w', encoding='utf-8') as w:
             w.write(data)
             # yaml.safe_dump(self.copy(), w, allow_unicode=True)
 
@@ -127,11 +132,4 @@ class IFTTTLogHandler(logging.Handler):
 
 
 if __name__ == '__main__':
-    # import glob
-    # for path in glob.iglob('*.yml'):
-    # config = YamlConfig(path)
-    # print(config)
-    # config.save()
-    config = YamlConfig()
-    config.on = 'test'
-    print(config)
+    pass
