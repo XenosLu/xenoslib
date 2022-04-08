@@ -54,8 +54,18 @@ class OneDrive(RequestAdapter):
     def drives(self):
         return self.get('/me/drives/')
 
-    def children(self):
-        return self.get('/me/drive/root/children')
+    def list(self, path='/'):
+        for item in self.get(f'/me/drive/root:/{path}:/children')['value']:
+            item_type = '<DIR>' if item.get('folder') else ''
+            print(f"{item_type}\t{item['name']}")
+
+    def content(self, item_path):
+        return self.get(f'/me/drive/root:/{item_path}:/content')
+
+    def download(self, item_path):
+        path, filename = os.path.split(item_path)
+        with open(filename, 'wb') as w:
+            w.write(self.content(item_path).encode('ISO-8859-1'))
 
     def mkdir(self):
         data = {"name": "New Folder", "folder": {}, "@microsoft.graph.conflictBehavior": "rename"}
