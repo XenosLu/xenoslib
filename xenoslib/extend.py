@@ -34,6 +34,9 @@ class YamlConfig(dict):
     def __repr__(self):
         return repr(str(self))
 
+    def __init__(self, conf_path=None):
+        pass
+
     def __new__(cls, conf_path='config.yml', *args, **kwargs):
         if not hasattr(cls, '_instances'):
             cls._instances = {}
