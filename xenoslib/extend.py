@@ -18,7 +18,6 @@ class YamlConfig(dict):
         return self.get(key)
 
     def __setattr__(self, name, value):
-        print(name)
         try:
             getattr(super(), name)
         except AttributeError as exc:

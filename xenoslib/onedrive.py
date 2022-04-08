@@ -6,7 +6,7 @@ import logging
 import requests
 
 from xenoslib.base import ArgMethodBase
-from xenoslib.extend import RequestAdapter
+from xenoslib.extend import RequestAdapter, YamlConfig
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,8 @@ class OneDrive(RequestAdapter):
     def __init__(self, username=None, password=None):
         self.session = requests.Session()
         if username and password:
-            self.auth(username, password)
+            res_data = self.auth(username, password)
+            self.load_auth(res_data)
 
     def auth(self, username, password):
         """https://docs.microsoft.com/zh-cn/azure/active-directory/develop/v2-oauth-ropc"""
@@ -44,9 +45,12 @@ class OneDrive(RequestAdapter):
         }
         response = self.session.post(auth_url, data=data)
         response.raise_for_status()
+        return response.json()
+
+    def load_auth(self, res_data):
         self.session.headers.update(
             {
-                'Authorization': f'Bearer {response.json()["access_token"]}',
+                'Authorization': f'Bearer {res_data["access_token"]}',
                 'Accept': 'application/json',
             }
         )
@@ -110,10 +114,27 @@ class OneDrive(RequestAdapter):
             return res.json()
 
 
-class OneUploader(OneDrive):
+class OneCLI(OneDrive):
     def upload(self, filepath, folder='/'):
         print(f'Uploading {filepath}...')
         return super().upload(filepath, folder)
+
+    def __init__(self, username=None, password=None, *args, **kwargs):
+        import sys
+
+        if sys.platform == 'win32':
+            home = os.path.expandvars('$userprofile')
+        else:
+            home = os.path.expandvars('$HOME')
+        self.session = requests.Session()
+        conf = YamlConfig(os.path.join(home, '.one.yaml'))
+        if username and password:
+            res_data = self.auth(username, password)
+            self.load_auth(res_data)
+            conf.update(res_data)
+            conf.save()
+        else:
+            self.load_auth(conf)
 
 
 class ArgMethod(ArgMethodBase):
@@ -124,7 +145,7 @@ class ArgMethod(ArgMethodBase):
         """upload files to onedrive, not support folder yet"""
         import glob
 
-        one = OneUploader(username, password)
+        one = OneCLI(username, password)
         if '*' in filepath:
             for filename in glob.glob(filepath):
                 print(one.upload(filename, folder=folder))
@@ -134,6 +155,10 @@ class ArgMethod(ArgMethodBase):
                     print(one.upload(filename, folder=folder))
         else:
             print(one.upload(filepath, folder=folder))
+
+    @staticmethod
+    def login(username, password):
+        OneCLI(username, password)
 
 
 if __name__ == '__main__':
