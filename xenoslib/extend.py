@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class YamlConfig(dict):
-    """config in yaml, can work as a dict"""
+    """A thread unsafe yaml file config utility , can work as a dict except __init__"""
 
     def __getattr__(self, key):
         return self.get(key)
@@ -43,10 +43,13 @@ class YamlConfig(dict):
         if cls._instances.get(conf_path) is None:
             cls._instances[conf_path] = super().__new__(cls)
             super().__setattr__(cls._instances[conf_path], '_conf_path', conf_path)
-            if os.path.exists(conf_path):
-                with open(conf_path, encoding='utf-8') as r:
-                    cls._instances[conf_path].update(yaml.safe_load(r))
+            cls._instances[conf_path]._load_conf()
         return cls._instances[conf_path]
+
+    def _load_conf(self):
+        if os.path.exists(self._conf_path):
+            with open(self._conf_path, encoding='utf-8') as r:
+                self.update(yaml.safe_load(r))
 
     def save(self):
         data = str(self)

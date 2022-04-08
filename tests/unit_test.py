@@ -73,11 +73,13 @@ class UnitTest(unittest.TestCase):
     def test_5_yamlconfig(self):
         config = YamlConfig()
         config2 = YamlConfig()
+        config3 = YamlConfig('new.yml')
         data = {'a': {'b': ['c', [0, {'d': 'e'}, {'a': 'b'}]]}}
         config['data'] = data
         self.assertEqual(str(config), 'data:\n  a:\n    b:\n    - c\n    - - 0\n      - d: e\n      - a: b\n')
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
+        self.assertNotEqual(id(config), id(config3))
 
 
 if __name__ == '__main__':
