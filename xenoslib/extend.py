@@ -68,7 +68,7 @@ class RequestAdapter:
         except Exception as exc:
             logger.debug(exc)
             logger.debug(response)
-            return response.text
+            return response
 
     def get(self, path, *args, **kwargs):
         return self.request('get', path, *args, **kwargs)

@@ -69,7 +69,8 @@ class OneDrive(RequestAdapter):
     def download(self, item_path):
         path, filename = os.path.split(item_path)
         with open(filename, 'wb') as w:
-            w.write(self.content(item_path).encode('ISO-8859-1'))
+            response = self.content(item_path)
+            w.write(response.content)
 
     def mkdir(self):
         data = {"name": "New Folder", "folder": {}, "@microsoft.graph.conflictBehavior": "rename"}
@@ -159,6 +160,10 @@ class ArgMethod(ArgMethodBase):
     @staticmethod
     def login(username, password):
         OneCLI(username, password)
+
+    @staticmethod
+    def download(remote_path):
+        OneCLI().download(remote_path)
 
 
 if __name__ == '__main__':
