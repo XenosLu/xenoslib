@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import sys
 import logging
 
 import requests
@@ -120,15 +121,16 @@ class OneCLI(OneDrive):
         print(f'Uploading {filepath}...')
         return super().upload(filepath, folder)
 
-    def __init__(self, username=None, password=None, *args, **kwargs):
-        import sys
-
+    def get_conf(self):
         if sys.platform == 'win32':
             home = os.path.expandvars('$userprofile')
         else:
             home = os.path.expandvars('$HOME')
+        return os.path.join(home, '.one.yaml')
+
+    def __init__(self, username=None, password=None, *args, **kwargs):
         self.session = requests.Session()
-        conf = YamlConfig(os.path.join(home, '.one.yaml'))
+        conf = YamlConfig(self.get_conf())
         if username and password:
             res_data = self.auth(username, password)
             self.load_auth(res_data)
@@ -137,9 +139,20 @@ class OneCLI(OneDrive):
         else:
             self.load_auth(conf)
 
+    def logout(self):
+        os.remove(self.get_conf())
+
 
 class ArgMethod(ArgMethodBase):
     """onedrive tenant util"""
+
+    @staticmethod
+    def login(username, password):
+        OneCLI(username, password)
+
+    @staticmethod
+    def logout():
+        OneCLI().logout()
 
     @staticmethod
     def upload(username, password, filepath, folder='/'):
@@ -156,10 +169,6 @@ class ArgMethod(ArgMethodBase):
                     print(one.upload(filename, folder=folder))
         else:
             print(one.upload(filepath, folder=folder))
-
-    @staticmethod
-    def login(username, password):
-        OneCLI(username, password)
 
     @staticmethod
     def download(remote_path):
