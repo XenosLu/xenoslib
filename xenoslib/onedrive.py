@@ -155,11 +155,11 @@ class ArgMethod(ArgMethodBase):
         OneCLI().logout()
 
     @staticmethod
-    def upload(username, password, filepath, folder='/'):
+    def upload(filepath, folder='/'):
         """upload files to onedrive, not support folder yet"""
         import glob
 
-        one = OneCLI(username, password)
+        one = OneCLI()
         if '*' in filepath:
             for filename in glob.glob(filepath):
                 print(one.upload(filename, folder=folder))
