@@ -62,12 +62,12 @@ class RequestAdapter:
         url = f'{self.base_url}/{path}'
         logger.debug(url)
         response = self.session.request(method, url, *args, **kwargs)
+        logger.debug(response.text)
         response.raise_for_status()
         try:
             return response.json()
         except Exception as exc:
             logger.debug(exc)
-            logger.debug(response)
             return response
 
     def get(self, path, *args, **kwargs):

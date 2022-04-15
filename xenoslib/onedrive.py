@@ -74,8 +74,19 @@ class OneDrive(RequestAdapter):
             w.write(response.content)
 
     def mkdir(self):
-        data = {"name": "New Folder", "folder": {}, "@microsoft.graph.conflictBehavior": "rename"}
+        data = {
+            "name": "New Folder",
+            "folder": {},
+            "@microsoft.graph.conflictBehavior": "rename",
+        }
         return self.post('/me/drive/root/children', json=data)
+
+    def rename(self, from_path=None, to_name=None):
+        data = {
+            "name": to_name,
+            "parentReference": {},
+        }
+        return self.patch(f'/me/drive/root:/{from_path}', json=data)
 
     def upload_file(self, filepath, folder='/'):
         """
