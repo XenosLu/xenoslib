@@ -28,6 +28,7 @@ setup(
         ':python_version <= "3.9"': ['requests>=2.0.0'],
         'colorful:sys_platform == "win32"': ['colorama>=0.4.4'],
         ':"linux" in sys_platform': [],
+        'mock': ['requests_mock>=1.9.3'],
     },
     tests_require=['pytest>=2.8.0'],
 )
