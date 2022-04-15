@@ -82,6 +82,9 @@ class RequestAdapter:
     def delete(self, path, *args, **kwargs):
         return self.request('delete', path, *args, **kwargs)
 
+    def patch(self, path, *args, **kwargs):
+        return self.request('patch', path, *args, **kwargs)
+
     def __init__(self):
         self.session = requests.Session()
 
