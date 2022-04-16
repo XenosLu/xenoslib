@@ -7,8 +7,11 @@ import logging
 
 from xenoslib.extend import YamlConfig
 
-from requests_mock.mocker import _original_send, _set_method, Mocker
-from requests_mock import adapter, exceptions
+try:
+    from requests_mock.mocker import _original_send, _set_method, Mocker
+    from requests_mock import adapter, exceptions
+except Exception:
+    pass
 
 # Doc reference: https://requests-mock.readthedocs.io/en/latest/
 
