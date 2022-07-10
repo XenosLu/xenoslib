@@ -136,7 +136,7 @@ class IFTTTLogHandler(logging.Handler):
         try:
             send_notify(self.format(record), self.key)
         except Exception as exc:
-            logging.getlog(__name__).warning(exc, exc_info=True)
+            logger.warning(exc, exc_info=True)
 
 
 if __name__ == '__main__':
