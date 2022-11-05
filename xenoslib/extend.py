@@ -36,30 +36,30 @@ class YamlConfig(dict):
     def __init__(self, conf_path=None):
         pass
 
-    def __new__(cls, conf_path='config.yml', *args, **kwargs):
-        if not hasattr(cls, '_instances'):
+    def __new__(cls, conf_path="config.yml", *args, **kwargs):
+        if not hasattr(cls, "_instances"):
             cls._instances = {}
         if cls._instances.get(conf_path) is None:
             cls._instances[conf_path] = super().__new__(cls)
-            super().__setattr__(cls._instances[conf_path], '_conf_path', conf_path)
+            super().__setattr__(cls._instances[conf_path], "_conf_path", conf_path)
         cls._instances[conf_path]._load_conf()
         return cls._instances[conf_path]
 
     def _load_conf(self):
         if os.path.exists(self._conf_path):
-            with open(self._conf_path, encoding='utf-8') as r:
+            with open(self._conf_path, encoding="utf-8") as r:
                 self.update(yaml.safe_load(r))
 
     def save(self):
         data = str(self)
-        with open(self._conf_path, 'w', encoding='utf-8') as w:
+        with open(self._conf_path, "w", encoding="utf-8") as w:
             w.write(data)
             # yaml.safe_dump(self.copy(), w, allow_unicode=True)
 
 
 class RequestAdapter:
     def request(self, method, path, *args, **kwargs):
-        url = f'{self.base_url}/{path}'
+        url = f"{self.base_url}/{path}"
         logger.debug(url)
         response = self.session.request(method, url, *args, **kwargs)
         logger.debug(response.text)
@@ -71,19 +71,19 @@ class RequestAdapter:
             return response
 
     def get(self, path, *args, **kwargs):
-        return self.request('get', path, *args, **kwargs)
+        return self.request("get", path, *args, **kwargs)
 
     def post(self, path, *args, **kwargs):
-        return self.request('post', path, *args, **kwargs)
+        return self.request("post", path, *args, **kwargs)
 
     def put(self, path, *args, **kwargs):
-        return self.request('put', path, *args, **kwargs)
+        return self.request("put", path, *args, **kwargs)
 
     def delete(self, path, *args, **kwargs):
-        return self.request('delete', path, *args, **kwargs)
+        return self.request("delete", path, *args, **kwargs)
 
     def patch(self, path, *args, **kwargs):
-        return self.request('patch', path, *args, **kwargs)
+        return self.request("patch", path, *args, **kwargs)
 
     def __init__(self):
         self.session = requests.Session()
@@ -91,7 +91,7 @@ class RequestAdapter:
 
 def del_to_recyclebin(filepath, on_fail_delete=False):
     """delete file to recyclebin if possible"""
-    if not sys.platform == 'win32':
+    if not sys.platform == "win32":
         if on_fail_delete:
             os.remove(filepath)
             return True
@@ -114,8 +114,8 @@ def del_to_recyclebin(filepath, on_fail_delete=False):
 
 def send_notify(msg, key):
     """send a message for ifttt"""
-    url = f'https://maker.ifttt.com/trigger/message/with/key/{key}'
-    data = {'value1': msg}
+    url = f"https://maker.ifttt.com/trigger/message/with/key/{key}"
+    data = {"value1": msg}
     return requests.post(url, data=data)
 
 
@@ -139,5 +139,5 @@ class IFTTTLogHandler(logging.Handler):
             print(exc)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

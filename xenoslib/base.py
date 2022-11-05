@@ -11,32 +11,32 @@ def sleep(seconds, mute=False):
     end = time.time() + seconds
     while time.time() < end:
         if not mute:
-            print(f'ETA {seconds:.0f}/{end - time.time():.0f}  s\t', end='\r')
+            print(f"ETA {seconds:.0f}/{end - time.time():.0f}  s\t", end="\r")
         time.sleep(1)
 
 
-def simple_color(value, color_name='BLUE'):
+def simple_color(value, color_name="BLUE"):
     """
     return text with color, default in blue.
     "Why is it blue?"
     "It's always blue."
     """
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         return value
     colors = {
-        'RED': 31,
-        'GREEN': 32,
-        'YELLOW': 33,
-        'BLUE': 34,
-        'MAGENTA': 35,
-        'CYAN': 36,
+        "RED": 31,
+        "GREEN": 32,
+        "YELLOW": 33,
+        "BLUE": 34,
+        "MAGENTA": 35,
+        "CYAN": 36,
     }
-    return f'\033[1;{colors[color_name]}m{value}\033[0m'
+    return f"\033[1;{colors[color_name]}m{value}\033[0m"
 
 
-def color(value, color_name='BLUE'):
+def color(value, color_name="BLUE"):
     """if have colorama then use it"""
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         try:
             from colorama import Fore, Style, init
 
@@ -53,7 +53,7 @@ class NestedData:
     def __init__(self, obj):
         self.data = obj
 
-    def _find(self, obj, path=''):
+    def _find(self, obj, path=""):
         if isinstance(obj, dict):
             iter_obj = obj.items()
         elif isinstance(obj, (list, tuple)):
@@ -61,7 +61,7 @@ class NestedData:
         else:
             return
         for k, v in iter_obj:
-            new_path = f'{path}[{repr(k)}]'
+            new_path = f"{path}[{repr(k)}]"
             try:
                 if self._condition(k, v):
                     yield obj, new_path
@@ -115,7 +115,7 @@ class NestedData:
 
 class Singleton:
     def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, '_instance'):
+        if not hasattr(cls, "_instance"):
             cls._instance = super().__new__(cls)
         return cls._instance
 
@@ -124,8 +124,8 @@ class SingletonWithArgs:
     """带参数的单例模式, 通过继承使用，需放到第一继承位"""
 
     def __new__(cls, *args, **kwargs):
-        arg = f'{args}{kwargs}'
-        if not hasattr(cls, '_instances'):
+        arg = f"{args}{kwargs}"
+        if not hasattr(cls, "_instances"):
             cls._instances = {}
         return cls._instances.setdefault(arg, super().__new__(cls))
 
@@ -140,22 +140,22 @@ class ArgMethodBase:
             epilog=epilog,
             formatter_class=argparse.RawDescriptionHelpFormatter,
         )
-        subparsers = parser.add_subparsers(title='commands', dest='command')
+        subparsers = parser.add_subparsers(title="commands", dest="command")
         for arg_map in self.__get_arg_lists__():
-            sub_parser = subparsers.add_parser(arg_map['command'], help=arg_map['help'])
-            for arg in arg_map['required_args']:
+            sub_parser = subparsers.add_parser(arg_map["command"], help=arg_map["help"])
+            for arg in arg_map["required_args"]:
                 sub_parser.add_argument(arg)
-            for arg, value in arg_map['optional_args']:
-                sub_parser.add_argument('--%s' % arg, type=type(value), default=value)
+            for arg, value in arg_map["optional_args"]:
+                sub_parser.add_argument("--%s" % arg, type=type(value), default=value)
 
         args = parser.parse_args()
         if args.command is None:
             parser.print_help()
         elif self.__run_command__(**vars(args)) is False:
-            print(color('ERROR', 'RED'), file=sys.stderr)
+            print(color("ERROR", "RED"), file=sys.stderr)
             exit(-1)
         else:
-            print(color('OK', 'GREEN'), file=sys.stderr)
+            print(color("OK", "GREEN"), file=sys.stderr)
 
     def __run_command__(self, command, **args):
         """run a certain staticmethod"""
@@ -165,7 +165,7 @@ class ArgMethodBase:
         """get arguments info lists from self class staticmethods"""
         for obj_name in dir(self):
             func = getattr(self, obj_name)
-            if obj_name.startswith('__') or not callable(func):
+            if obj_name.startswith("__") or not callable(func):
                 continue
             default_len = 0
             default_values = []
@@ -176,10 +176,10 @@ class ArgMethodBase:
             required_args = func.__code__.co_varnames[: argcount - default_len]
             optional_args = func.__code__.co_varnames[argcount - default_len : argcount]  # noqa
             yield {
-                'command': obj_name,
-                'help': func.__doc__,
-                'required_args': required_args,
-                'optional_args': zip(optional_args, default_values),
+                "command": obj_name,
+                "help": func.__doc__,
+                "required_args": required_args,
+                "optional_args": zip(optional_args, default_values),
             }
 
 
@@ -194,26 +194,26 @@ def monkey_patch(module, obj_name, obj, package=None):
         package = module.__package__
     if obj_name in module.__dict__:
         module.__dict__[obj_name] = obj
-        print(f'Monkey patched <{obj_name}> in <{module.__name__}>', file=sys.stderr)
+        print(f"Monkey patched <{obj_name}> in <{module.__name__}>", file=sys.stderr)
     for k, v in module.__dict__.items():
         if inspect.ismodule(v) and v.__package__ == package:
             monkey_patch(v, obj_name, obj, package)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     data = {
-        'd': [
-            {'id': 1},
-            {'id': 2},
-            {'id': 3},
-            {'id': 4},
-            [{'id': 3}],
-            'ixxx',
+        "d": [
+            {"id": 1},
+            {"id": 2},
+            {"id": 3},
+            {"id": 4},
+            [{"id": 3}],
+            "ixxx",
         ]
     }
     n = NestedData(data)
 
     from pprint import pprint
 
-    pprint(list(n.find_keys('id')))
-    pprint(list(n.find(lambda k, v: 'i' in v, ignore_exc=True)))
+    pprint(list(n.find_keys("id")))
+    pprint(list(n.find(lambda k, v: "i" in v, ignore_exc=True)))

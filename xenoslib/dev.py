@@ -15,10 +15,10 @@ class RestartWhenModified:
     records = {}
 
     def __init__(self, *files):
-        time_format = '%Y-%m-%d %H:%M:%S'
+        time_format = "%Y-%m-%d %H:%M:%S"
         files = list(files)
         files.append(os.path.abspath(sys.argv[0]))
-        logger.debug(f'detecting file update for files: {files}')
+        logger.debug(f"detecting file update for files: {files}")
         for file in files:
             file = os.path.abspath(file)
             mtime_now = os.path.getmtime(file)
@@ -27,11 +27,11 @@ class RestartWhenModified:
                 time_before = time.strftime(time_format, time.localtime(mtime_before))
                 time_after = time.strftime(time_format, time.localtime(mtime_now))
                 logger.info(
-                    f'file [{file}] mtime changed from <{time_before}> to <{time_after}>, restarting...'
+                    f"file [{file}] mtime changed from <{time_before}> to <{time_after}>, restarting..."
                 )
                 self.restart()
             self.records[file] = mtime_now
 
     def restart(self):
         python = sys.executable
-        os.execl(python, python, *[f'"{i}"' if ' ' in i else i for i in sys.argv])
+        os.execl(python, python, *[f'"{i}"' if " " in i else i for i in sys.argv])

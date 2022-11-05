@@ -23,7 +23,7 @@ class RequestsMocker(Mocker):
             uri if there is not a mock installed for it. Defaults to False.
         """
         super().__init__(**kwargs)
-        self._config = YamlConfig('mock.yml')
+        self._config = YamlConfig("mock.yml")
         for url, value in self._config.items():
             method, text = value
             # logger.
@@ -35,7 +35,7 @@ class RequestsMocker(Mocker):
         Install the adapter and the wrappers required to intercept requests.
         """
         if self._last_send:
-            raise RuntimeError('Mocker has already been started')
+            raise RuntimeError("Mocker has already been started")
 
         # backup last `send` for restoration on `self.stop`
         self._last_send = self._mock_target.send

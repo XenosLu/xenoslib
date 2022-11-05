@@ -9,7 +9,7 @@ import tty
 
 
 def pause():
-    print('Press any key to continue...')
+    print("Press any key to continue...")
     old_settings = termios.tcgetattr(sys.stdin)  # get settings for stdin
     new_settings = old_settings[:]
 
@@ -26,7 +26,7 @@ def timeout(seconds):
     old_settings = termios.tcgetattr(sys.stdin)
     tty.setcbreak(sys.stdin.fileno())
     for second in range(seconds - 1, -1, -1):
-        print(f'Waiting {second}s , press any key to continue...', end='\r')
+        print(f"Waiting {second}s , press any key to continue...", end="\r")
         break_flag = False
         for i in range(1000):
             time.sleep(0.001)
@@ -39,5 +39,5 @@ def timeout(seconds):
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)  # recover terminal
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pause()

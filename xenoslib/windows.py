@@ -7,7 +7,6 @@ import time
 import msvcrt
 
 
-
 class RunAsAdmin:
     """RunAsAdmin(main, cmd=True)"""
 

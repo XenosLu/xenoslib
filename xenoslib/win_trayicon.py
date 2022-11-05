@@ -35,7 +35,7 @@ class Thread(threading.Thread):
             # """if it returns a number greater than one, you're in trouble,
             # and you should call it again with exc=NULL to revert the effect"""
             ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
-            raise SystemError('PyThreadState_SetAsyncExc failed')
+            raise SystemError("PyThreadState_SetAsyncExc failed")
         while self.is_alive():
             time.sleep(0.05)
 
@@ -47,7 +47,7 @@ class MenuItem:
 
     def action(self):
         self.checked = not self.checked
-        logger.debug(f'[{self.__class__.__name__}] status: {self.checked}')
+        logger.debug(f"[{self.__class__.__name__}] status: {self.checked}")
 
 
 class MenuItemThread(MenuItem):
@@ -62,7 +62,7 @@ class MenuItemThread(MenuItem):
 
     @property
     def checked(self):
-        if not hasattr(self, 'thread'):
+        if not hasattr(self, "thread"):
             return False
         return self.thread.is_alive()
 
@@ -72,7 +72,7 @@ class MenuItemThread(MenuItem):
             self.start_a_thread()
         elif self.checked:
             self.thread.kill()
-            logger.info(f'{self.thread.name} killed.')
+            logger.info(f"{self.thread.name} killed.")
 
     def action(self):
         super().action()
@@ -105,12 +105,12 @@ class SysTrayIcon:
     """sys tray icon app class"""
 
     FIRST_ID = 1023
-    WINDOW_CLASS_NAME = 'PySysTrayIcon'
+    WINDOW_CLASS_NAME = "PySysTrayIcon"
 
     def init_icon(self, iconpath=None):
         if not iconpath:
             python_path = os.path.dirname(os.path.abspath(sys.executable))
-            iconpath = os.path.join(python_path, 'DLLs', 'pyd.ico')
+            iconpath = os.path.join(python_path, "DLLs", "pyd.ico")
         if os.path.isfile(iconpath):
             hinst = win32gui.GetModuleHandle(None)
             icon_flags = win32con.LR_LOADFROMFILE | win32con.LR_DEFAULTSIZE
@@ -136,7 +136,7 @@ class SysTrayIcon:
 
     def create_window(self):
         message_map = {
-            win32gui.RegisterWindowMessage('TaskbarCreated'): self.on_restart,
+            win32gui.RegisterWindowMessage("TaskbarCreated"): self.on_restart,
             win32con.WM_DESTROY: self.on_destroy,
             win32con.WM_COMMAND: self.on_command,
             win32con.WM_USER + 20: self.on_notify_icon,
@@ -189,7 +189,7 @@ class SysTrayIcon:
             if callable(option_text):
                 option_text = option_text()
             flag = win32con.MF_STRING
-            if option_obj == '-':
+            if option_obj == "-":
                 flag = win32con.MF_SEPARATOR
             elif isinstance(option_obj, MenuItem):
                 flag = (
@@ -208,7 +208,7 @@ class SysTrayIcon:
     def start(self):
         win32gui.PumpMessages()
 
-    def draw_notify_icon(self, title='', info='', hicon=None, fresh=False):
+    def draw_notify_icon(self, title="", info="", hicon=None, fresh=False):
         # See https://docs.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-notifyicondataw
         NIIF_USER = 0x00000004
         NIIF_NOSOUND = 0x00000010
@@ -260,7 +260,7 @@ class SysTrayIcon:
         menu_text, menu_action = self.menu_options[option_id]
         if callable(menu_text):
             menu_text = menu_text()
-        logger.debug(f'menu action: [{menu_text}]')
+        logger.debug(f"menu action: [{menu_text}]")
         if callable(menu_action):
             menu_action()
         elif isinstance(menu_action, MenuItem):
@@ -275,17 +275,17 @@ class SysTrayIconApp(SysTrayIcon):
             self.console_switcher.action()
         title = os.path.splitext(os.path.basename(sys.argv[0]))[0]
         menu_options = (
-            (f'[{title}] Show Console (&S)', partial(self.console_switcher.action, True)),
-            ('Hide Console (&H)', partial(self.console_switcher.action, False)),
-            ('-', '-'),
+            (f"[{title}] Show Console (&S)", partial(self.console_switcher.action, True)),
+            ("Hide Console (&H)", partial(self.console_switcher.action, False)),
+            ("-", "-"),
             *extra_menu_options,
-            *((('-', '-'),) if extra_menu_options else ()),
-            ('Enable Notifications (&N)', self.enable_notifications),
-            ('-', '-'),
-            ('Clear Console (&C)', partial(os.system, 'cls')),
-            ('Open Containing Folder (&O)', partial(os.system, 'explorer .')),
-            ('Restart (&T)', self.restart_script),
-            ('Exit (&X)', self.quit),
+            *((("-", "-"),) if extra_menu_options else ()),
+            ("Enable Notifications (&N)", self.enable_notifications),
+            ("-", "-"),
+            ("Clear Console (&C)", partial(os.system, "cls")),
+            ("Open Containing Folder (&O)", partial(os.system, "explorer .")),
+            ("Restart (&T)", self.restart_script),
+            ("Exit (&X)", self.quit),
         )
         super().__init__(
             menu_options=menu_options,
@@ -297,16 +297,16 @@ class SysTrayIconApp(SysTrayIcon):
     @staticmethod
     def restart_script():
         python = sys.executable
-        os.execl(python, python, *[f'"{i}"' if ' ' in i else i for i in sys.argv])
+        os.execl(python, python, *[f'"{i}"' if " " in i else i for i in sys.argv])
 
-    def toast(self, title='', info='', levelname=None):
+    def toast(self, title="", info="", levelname=None):
         if not self.enable_notifications.checked:
             return
         icon_map = {
             # 'INFO': win32con.IDI_INFORMATION,
-            'WARNING': win32con.IDI_WARNING,
-            'ERROR': win32con.IDI_ERROR,
-            'CRITICAL': win32con.IDI_ERROR,
+            "WARNING": win32con.IDI_WARNING,
+            "ERROR": win32con.IDI_ERROR,
+            "CRITICAL": win32con.IDI_ERROR,
         }
         icon_id = icon_map.get(levelname)
         hicon = win32gui.LoadIcon(0, icon_id) if icon_id else None
@@ -335,5 +335,5 @@ class ToastLogHandler(logging.Handler):
         self.callback = callback
 
     def emit(self, record):
-        title = record.filename if record.name == '__main__' else record.name
+        title = record.filename if record.name == "__main__" else record.name
         self.callback(title=title, info=self.format(record), levelname=record.levelname)
