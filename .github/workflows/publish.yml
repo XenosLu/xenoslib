@@ -32,9 +32,9 @@ jobs:
         run: |
           git config --local user.email "xenos.lu@gmail.com"
           git config --local user.name "${{ github.actor }}"
-          # git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git tag v$(python3 setup.py --version)
-          git push --tags && echo "::set-output name=tagged::true" || echo skipped.
+          # git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}          
+          # git push --tags && echo "::set-output name=tagged::true" || echo skipped.
+          git push --tags && echo "tagged=true" >> $GITHUB_OUTPUT || echo skipped.
 
   publish:
 
