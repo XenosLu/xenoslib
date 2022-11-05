@@ -32,10 +32,10 @@ jobs:
         run: |
           git config --local user.email "xenos.lu@gmail.com"
           git config --local user.name "${{ github.actor }}"
-          # git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}          
-          # git push --tags && echo "::set-output name=tagged::true" || echo skipped.
+          # git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push --tags && echo push successfully.
           git push --tags && echo "tagged=true" >> $GITHUB_OUTPUT || echo skipped.
-
+# git push --tags && echo "::set-output name=tagged::true" || echo skipped.
   publish:
 
     runs-on: ubuntu-latest
