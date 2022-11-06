@@ -8,7 +8,9 @@ import msvcrt
 
 
 class RunAsAdmin:
-    """RunAsAdmin(main, cmd=True)"""
+    """
+    Usage: RunAsAdmin(main, cmd=True)
+    """
 
     @staticmethod
     def is_admin():
