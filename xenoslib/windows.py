@@ -44,7 +44,7 @@ def add_windows_path_env(new_path):
         path_list.append(new_path)
         new_path = ";".join(path_list)
         winreg.SetValueEx(path_key, "Path", 0, winreg.REG_EXPAND_SZ, new_path)
-        # refresh()
+    # refresh()
 
 
 class RunAsAdmin:
@@ -78,7 +78,7 @@ class RunAsAdmin:
 
     @staticmethod
     def run_as_admin_in_cmd():
-        arg_line = f'/k {sys.executable} "{os.path.abspath(sys.argv[0])}" {" ".join(sys.argv[1:])}'
+        arg_line = f'/k start "{sys.executable}" "{os.path.abspath(sys.argv[0])}" {" ".join(sys.argv[1:])}'
         ctypes.windll.shell32.ShellExecuteW(None, "runas", "cmd", arg_line, None, 1)
 
 

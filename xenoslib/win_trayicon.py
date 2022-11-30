@@ -253,8 +253,10 @@ class SysTrayIcon:
         return True
 
     def on_command(self, hwnd, msg, wparam, lparam):
-        option_id = win32gui.LOWORD(wparam)
-        self.execute_menu_option(option_id)
+        # option_id = win32gui.LOWORD(wparam)
+        # self.execute_menu_option(option_id)
+        self.execute_menu_option(wparam)
+        return True
 
     def execute_menu_option(self, option_id):
         menu_text, menu_action = self.menu_options[option_id]
