@@ -63,6 +63,9 @@ class OneDrive(RequestAdapter):
             item_type = "<DIR>" if item.get("folder") else ""
             print(f"{item_type}\t{item['name']}")
 
+    def get_path(self, item_path):
+        return self.get(f"/me/drive/root:/{item_path}")
+
     def content(self, item_path):
         return self.get(f"/me/drive/root:/{item_path}:/content")
 
@@ -151,7 +154,7 @@ class OneCLI(OneDrive):
         elif conf:
             self.load_auth(conf)
         else:
-            print('no login')
+            print("no login")
             exit(-1)
 
     def logout(self):
@@ -190,8 +193,17 @@ class ArgMethod(ArgMethodBase):
         OneCLI().download(remote_path)
 
     @staticmethod
-    def list(path='/'):
+    def list(path="/"):
         OneCLI().list(path)
+
+    @staticmethod
+    def get(path="/"):
+        try:
+            print(OneCLI().get_path(path))
+        except Exception as exc:
+            print(exc)
+            return False
+        return True
 
 
 if __name__ == "__main__":
