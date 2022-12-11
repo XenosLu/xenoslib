@@ -131,16 +131,18 @@ class OneCLI(OneDrive):
         print(f"Uploading {filepath}...")
         return super().upload(filepath, folder)
 
-    def get_conf(self):
+    def get_conf_file(self):
         if os.name == "nt":
             home = os.path.expandvars("$userprofile")
         else:
             home = os.path.expandvars("$HOME")
-        return os.path.join(home, ".one.yaml")
+        self.conf_file = os.path.join(home, ".one.yml")
+        return self.conf_file
 
     def __init__(self, username=None, password=None, *args, **kwargs):
         self.session = requests.Session()
-        conf = YamlConfig(self.get_conf())
+        self.get_conf_file()
+        conf = YamlConfig(self.conf_file)
         if username and password:
             res_data = self.auth(username, password)
             self.load_auth(res_data)
@@ -150,7 +152,7 @@ class OneCLI(OneDrive):
             self.load_auth(conf)
 
     def logout(self):
-        os.remove(self.get_conf())
+        os.remove(self.conf_file)
 
 
 class ArgMethod(ArgMethodBase):
