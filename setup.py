@@ -22,7 +22,7 @@ setup(
     install_requires=[
         "PyYAML>=5.4",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     extras_require={
         ':"linux" in sys_platform': [],
         ':sys_platform == "win32"': ["pywin32>=225"],
