@@ -85,6 +85,9 @@ class RequestAdapter:
     def patch(self, path, *args, **kwargs):
         return self.request("patch", path, *args, **kwargs)
 
+    def head(self, path, *args, **kwargs):
+        return self.request("head", path, *args, **kwargs)
+
     def __init__(self):
         self.session = requests.Session()
 
