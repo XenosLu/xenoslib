@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-import sys
 import logging
 
 import requests
@@ -133,7 +132,7 @@ class OneCLI(OneDrive):
         return super().upload(filepath, folder)
 
     def get_conf(self):
-        if sys.platform == "win32":
+        if os.name == "nt":
             home = os.path.expandvars("$userprofile")
         else:
             home = os.path.expandvars("$HOME")
