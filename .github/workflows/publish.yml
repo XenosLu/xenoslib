@@ -34,7 +34,6 @@ jobs:
           git config --local user.name "${{ github.actor }}"
           git tag v$(python3 setup.py --version)
           git push --tags && echo "tagged=true" >> $GITHUB_OUTPUT || echo skipped.
-# git push --tags && echo "::set-output name=tagged::true" || echo skipped.
   publish:
 
     runs-on: ubuntu-latest
