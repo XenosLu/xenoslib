@@ -186,6 +186,10 @@ class ArgMethod(ArgMethodBase):
     def download(remote_path):
         OneCLI().download(remote_path)
 
+    @staticmethod
+    def list(path='/'):
+        OneCLI().list(path)
+
 
 if __name__ == "__main__":
     ArgMethod()
