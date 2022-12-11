@@ -148,8 +148,11 @@ class OneCLI(OneDrive):
             self.load_auth(res_data)
             conf.update(res_data)
             conf.save()
-        else:
+        elif conf:
             self.load_auth(conf)
+        else:
+            print('no login')
+            exit(-1)
 
     def logout(self):
         os.remove(self.conf_file)
