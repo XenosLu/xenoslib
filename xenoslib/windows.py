@@ -78,7 +78,9 @@ class RunAsAdmin:
 
     @staticmethod
     def run_as_admin_in_cmd():
-        arg_line = f'/k start "{sys.executable}" "{os.path.abspath(sys.argv[0])}" {" ".join(sys.argv[1:])}'
+        arg_line = (
+            f'/k start "{sys.executable}" "{os.path.abspath(sys.argv[0])}" {" ".join(sys.argv[1:])}'
+        )
         ctypes.windll.shell32.ShellExecuteW(None, "runas", "cmd", arg_line, None, 1)
 
 

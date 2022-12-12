@@ -78,7 +78,7 @@ class OneDrive(RequestAdapter):
             response = self.content(item_path)
             size = int(response.headers["content-length"])
             print(f"Total size: {size}")
-            chunk_size=1024**2
+            chunk_size = 1024**2
             for n, chunk in enumerate(response.iter_content(chunk_size=chunk_size), start=1):
                 if chunk:
                     w.write(chunk)
