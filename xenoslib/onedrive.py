@@ -69,15 +69,20 @@ class OneDrive(RequestAdapter):
     def content(self, item_path):
         path = f"/me/drive/root:/{item_path}:/content"
         url = f"{self.base_url}/{path}"
-        return self.session.request('get', url, stream=True)
+        return self.session.request("get", url, stream=True)
 
     def download(self, item_path):
         path, filename = os.path.split(item_path)
         with open(filename, "wb") as w:
-            for n, chunk in enumerate(self.content(item_path).iter_content(chunk_size=1024**2)):
+            response = self.content(item_path)
+            size = int(response.headers["content-length"])
+            print(f"Total size: {size}")
+            for n, chunk in enumerate(response.iter_content(chunk_size=1024**2)):
                 if chunk:
                     w.write(chunk)
-                    print('.'*n, end='\r')
+                    percentage = n * 1024**2 / size * 100
+                    print(f"progress: {percentage:.2f}%", end="\r")
+            print()
 
     def mkdir(self):
         data = {
