@@ -67,17 +67,17 @@ class OneDrive(RequestAdapter):
         return self.get(f"/me/drive/root:/{item_path}")
 
     def content(self, item_path):
-        return self.get(f"/me/drive/root:/{item_path}:/content", stream=True)
+        path = f"/me/drive/root:/{item_path}:/content"
+        url = f"{self.base_url}/{path}"
+        return self.session.request('get', url, stream=True)
 
     def download(self, item_path):
         path, filename = os.path.split(item_path)
         with open(filename, "wb") as w:
-            for chunk in self.content(item_path).iter_content(chunk_size=4096):
+            for n, chunk in enumerate(self.content(item_path).iter_content(chunk_size=1024**2)):
                 if chunk:
                     w.write(chunk)
-                    print('.', end='')
-            # response = self.content(item_path)
-            # w.write(response.content)
+                    print('.'*n, end='\r')
 
     def mkdir(self):
         data = {
@@ -194,6 +194,10 @@ class ArgMethod(ArgMethodBase):
 
     @staticmethod
     def download(remote_path):
+        OneCLI().download(remote_path)
+
+    @staticmethod
+    def down(remote_path):
         OneCLI().download(remote_path)
 
     @staticmethod

@@ -59,6 +59,7 @@ class YamlConfig(dict):
 
 class RequestAdapter:
     def request(self, method, path, *args, **kwargs):
+        """to-do: support stream=True"""
         url = f"{self.base_url}/{path}"
         logger.debug(url)
         response = self.session.request(method, url, *args, **kwargs)
