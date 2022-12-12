@@ -78,11 +78,12 @@ class OneDrive(RequestAdapter):
             response = self.content(item_path)
             size = int(response.headers["content-length"])
             print(f"Total size: {size}")
-            for n, chunk in enumerate(response.iter_content(chunk_size=1024**2)):
+            chunk_size=1024**2
+            for n, chunk in enumerate(response.iter_content(chunk_size=chunk_size), start=1):
                 if chunk:
                     w.write(chunk)
-                    percentage = (n + 1) * 1024**2 / size * 100
-                    print(f"progress: {percentage:.2f}%", end="\r")
+                percentage = n * chunk_size / size * 100
+                print(f"progress: {percentage:.2f}%", end="\r")
             print()
 
     def mkdir(self):
