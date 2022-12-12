@@ -67,6 +67,7 @@ class OneDrive(RequestAdapter):
         return self.get(f"/me/drive/root:/{item_path}")
 
     def content(self, item_path):
+        """https://learn.microsoft.com/zh-cn/onedrive/developer/rest-api/api/driveitem_get_content?view=odsp-graph-online"""
         path = f"/me/drive/root:/{item_path}:/content"
         url = f"{self.base_url}/{path}"
         return self.session.request("get", url, stream=True)
@@ -80,7 +81,7 @@ class OneDrive(RequestAdapter):
             for n, chunk in enumerate(response.iter_content(chunk_size=1024**2)):
                 if chunk:
                     w.write(chunk)
-                    percentage = n * 1024**2 / size * 100
+                    percentage = (n + 1) * 1024**2 / size * 100
                     print(f"progress: {percentage:.2f}%", end="\r")
             print()
 
