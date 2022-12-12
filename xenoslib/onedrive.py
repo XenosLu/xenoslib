@@ -67,13 +67,17 @@ class OneDrive(RequestAdapter):
         return self.get(f"/me/drive/root:/{item_path}")
 
     def content(self, item_path):
-        return self.get(f"/me/drive/root:/{item_path}:/content")
+        return self.get(f"/me/drive/root:/{item_path}:/content", stream=True)
 
     def download(self, item_path):
         path, filename = os.path.split(item_path)
         with open(filename, "wb") as w:
-            response = self.content(item_path)
-            w.write(response.content)
+            for chunk in self.content(item_path).iter_content(chunk_size=4096):
+                if chunk:
+                    w.write(chunk)
+                    print('.', end='')
+            # response = self.content(item_path)
+            # w.write(response.content)
 
     def mkdir(self):
         data = {
