@@ -54,6 +54,7 @@ class NestedData:
         self.data = obj
 
     def _find(self, obj, path=""):
+        """return generator"""
         if isinstance(obj, dict):
             iter_obj = obj.items()
         elif isinstance(obj, (list, tuple)):
@@ -72,12 +73,13 @@ class NestedData:
             yield from self._find(v, new_path)
 
     def find(self, condition, ignore_exc=False):
+        """return generator with (obj, path)"""
         self.ignore_exc = ignore_exc
         self._condition = condition
         return self._find(self.data)
 
     def find_keys(self, key):
-        """find all data with path matches key"""
+        """find all data with path matches key in generator"""
         return self.find(lambda k, v: k == key)
 
     def find_values(self, value):
