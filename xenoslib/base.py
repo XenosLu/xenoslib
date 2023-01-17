@@ -49,6 +49,7 @@ def color(value, color_name="BLUE"):
 
 class NestedData:
     """utils for nested data"""
+
     result = None
     path = None
 
@@ -130,6 +131,7 @@ class NestedData:
         print(self.result)
         print("Nested data path:")
         print(self.path)
+
 
 class Singleton:
     def __new__(cls, *args, **kwargs):
