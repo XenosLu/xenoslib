@@ -49,9 +49,11 @@ def color(value, color_name="BLUE"):
 
 class NestedData:
     """utils for nested data"""
+    result = None
+    path = None
 
-    def __init__(self, obj):
-        self.data = obj
+    def __init__(self, data):
+        self.data = data
 
     def _find(self, obj, path=""):
         """return generator"""
@@ -78,6 +80,16 @@ class NestedData:
         self._condition = condition
         return self._find(self.data)
 
+    def _find_one(self, method, *args, **kwagrs):
+        """find one result from results"""
+        self.path = None
+        self.result = None
+        for obj, path in method(*args, **kwagrs):
+            self.path = path
+            self.result = obj
+            return obj
+        return None
+
     def find_keys(self, key):
         """find all data with path matches key in generator"""
         return self.find(lambda k, v: k == key)
@@ -95,36 +107,29 @@ class NestedData:
         return self.find(lambda k, v: var in (k, v), ignore_exc=True)
 
     def find_any(self, var):
-        self.path = None
-        for obj, path in self.find_any_keyvalues(var):
-            self.path = path
-            return obj
-        return None
+        """find key and path for data matches any key or value"""
+        return self._find_one(self.find_any_keyvalues, var)
 
     def find_key(self, key):
         """find key and path for data"""
-        self.path = None
-        for obj, path in self.find_keys(key):
-            self.path = path
-            return obj[key]
+        result = self._find_one(self.find_keys, key)
+        if result is not None:
+            return result[key]
         return None
 
     def find_value(self, value):
         """find key and path for data"""
-        self.path = None
-        for obj, path in self.find_values(value):
-            self.path = path
-            return obj
-        return None
+        return self._find_one(self.find_values, value)
 
     def find_keyvalue(self, key, value):
-        """find key and path for data"""
-        self.path = None
-        for obj, path in self.find_keyvalues(key, value):
-            self.path = path
-            return obj
-        return None
+        """find key and path for data match both key and value"""
+        return self._find_one(self.find_keyvalues, key, value)
 
+    def show_result(self):
+        print("Nested data result: ")
+        print(self.result)
+        print("Nested data path:")
+        print(self.path)
 
 class Singleton:
     def __new__(cls, *args, **kwargs):

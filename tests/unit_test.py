@@ -41,6 +41,11 @@ class UnitTest(unittest.TestCase):
         result = nesteddata.path
         self.assertEqual(result, "['a']['b'][1][1]['d']")
 
+        result = nesteddata.find_any("e")
+        self.assertEqual(result, {"d": "e"})
+        result = nesteddata.path
+        self.assertEqual(result, "['a']['b'][1][1]['d']")
+
         result = nesteddata.find_keyvalue("d", "e")
         self.assertEqual(result, {"d": "e"})
         result = nesteddata.path
