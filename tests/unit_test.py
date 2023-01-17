@@ -28,7 +28,7 @@ class UnitTest(unittest.TestCase):
         print("=" * 79)
 
     def test_1_NestedData(self):
-        data = {"a": {"b": ["c", [0, {"d": "e"}, {"a": "b"}]]}}
+        data = {"a": {"b": ["c", [0, {"d": "e"}, {"a": "b"}]], "e": []}}
         nesteddata = xenoslib.NestedData(data)
 
         result = nesteddata.find_key("d")
@@ -45,6 +45,13 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(result, {"d": "e"})
         result = nesteddata.path
         self.assertEqual(result, "['a']['b'][1][1]['d']")
+
+        results = nesteddata.find_any_keyvalues("e")
+        results = list(results)
+        result = nesteddata.find_values("e")
+        self.assertEqual(results[0], list(result)[0])
+        result = nesteddata.find_keys("e")
+        self.assertEqual(results[1], list(result)[0])
 
     def test_2_Singleton(self):
         class TestSingleton(xenoslib.Singleton):

@@ -90,6 +90,17 @@ class NestedData:
         """find all data that matches value and path for data"""
         return self.find(lambda k, v: (k, v) == (key, value))
 
+    def find_any_keyvalues(self, var):
+        """find all data that matches key or value and path for data"""
+        return self.find(lambda k, v: var in (k, v), ignore_exc=True)
+
+    def find_any(self, var):
+        self.path = None
+        for obj, path in self.find_any_keyvalues(var):
+            self.path = path
+            return obj
+        return None
+
     def find_key(self, key):
         """find key and path for data"""
         self.path = None
