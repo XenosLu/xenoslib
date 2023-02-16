@@ -83,7 +83,7 @@ class OneDrive(RequestAdapter):
                 if chunk:
                     w.write(chunk)
                 percentage = n * chunk_size / size * 100
-                print(f"progress: {percentage:.2f}%", end="\r")
+                print(f"download progress: {percentage:.2f}% {filename}", end="\r")
             print()
 
     def mkdir(self):
