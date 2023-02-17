@@ -6,6 +6,7 @@ import xenoslib
 import xenoslib.dev
 import xenoslib.onedrive
 from xenoslib.extend import YamlConfig
+from xenoslib import NestedData
 
 
 class UnitTest(unittest.TestCase):
@@ -27,38 +28,7 @@ class UnitTest(unittest.TestCase):
         """run after all tests"""
         print("=" * 79)
 
-    def test_1_NestedData(self):
-        data = {"a": {"b": ["c", [0, {"d": "e"}, {"a": "b"}]], "e": []}}
-        nesteddata = xenoslib.NestedData(data)
-
-        result = nesteddata.find_key("d")
-        self.assertEqual(result, "e")
-        result = nesteddata.path
-        self.assertEqual(result, "['a']['b'][1][1]['d']")
-
-        result = nesteddata.find_value("e")
-        self.assertEqual(result, {"d": "e"})
-        result = nesteddata.path
-        self.assertEqual(result, "['a']['b'][1][1]['d']")
-
-        result = nesteddata.find_any("e")
-        self.assertEqual(result, {"d": "e"})
-        result = nesteddata.path
-        self.assertEqual(result, "['a']['b'][1][1]['d']")
-
-        result = nesteddata.find_keyvalue("d", "e")
-        self.assertEqual(result, {"d": "e"})
-        result = nesteddata.path
-        self.assertEqual(result, "['a']['b'][1][1]['d']")
-
-        results = nesteddata.find_any_keyvalues("e")
-        results = list(results)
-        result = nesteddata.find_values("e")
-        self.assertEqual(results[0], list(result)[0])
-        result = nesteddata.find_keys("e")
-        self.assertEqual(results[1], list(result)[0])
-
-    def test_2_Singleton(self):
+    def test_Singleton(self):
         class TestSingleton(xenoslib.Singleton):
             pass
 
@@ -66,7 +36,7 @@ class UnitTest(unittest.TestCase):
         obj_b = TestSingleton()
         self.assertEqual(id(obj_a), id(obj_b))
 
-    def test_3_SingletonWithArgs(self):
+    def test_SingletonWithArgs(self):
         class TestSingletonWithArgs(xenoslib.SingletonWithArgs):
             pass
 
@@ -76,13 +46,13 @@ class UnitTest(unittest.TestCase):
         self.assertNotEqual(id(obj_a), id(obj_b))
         self.assertEqual(id(obj_a), id(obj_c))
 
-    def test_4_monkey_patch(self):
+    def test_monkey_patch(self):
         self.assertNotEqual(xenoslib.__version__, "injected version")
         xenoslib.monkey_patch("xenoslib", "__version__", "injected version")
         self.assertEqual(xenoslib.about.__version__, "injected version")
         self.assertEqual(xenoslib.__version__, "injected version")
 
-    def test_5_yamlconfig(self):
+    def test_yamlconfig(self):
         config = YamlConfig()
         config2 = YamlConfig()
         config3 = YamlConfig("new.yml")
@@ -94,6 +64,53 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(config2.data, data)
         self.assertEqual(id(config), id(config2))
         self.assertNotEqual(id(config), id(config3))
+
+
+class TestNestedData(unittest.TestCase):
+    def setUp(self):
+        self.data = {"a": 1, "b": {"c": 2, "d": [3, 4, {"e": 5}]}, "f": (6, 7, {"g": 8})}
+
+    def test_find_keys(self):
+        nd = NestedData(self.data)
+        result = list(nd.find_keys("c"))
+        self.assertEqual(result, [({"c": 2, "d": [3, 4, {"e": 5}]}, "['b']['c']")])
+
+    def test_find_values(self):
+        nd = NestedData(self.data)
+        result = list(nd.find_values(5))
+        self.assertEqual(result, [({"e": 5}, "['b']['d'][2]['e']")])
+
+    def test_find_keyvalues(self):
+        nd = NestedData(self.data)
+        result = list(nd.find_keyvalues("c", 2))
+        self.assertEqual(result, [({"c": 2, "d": [3, 4, {"e": 5}]}, "['b']['c']")])
+
+    def test_find_any_keyvalues(self):
+        nd = NestedData(self.data)
+        result = list(nd.find_any_keyvalues("c"))
+        self.assertEqual(result, [({"c": 2, "d": [3, 4, {"e": 5}]}, "['b']['c']")])
+        result = list(nd.find_any_keyvalues("g"))
+        self.assertEqual(result, [({"g": 8}, "['f'][2]['g']")])
+
+    def test_find_any(self):
+        nd = NestedData(self.data)
+        result = nd.find_any(5)
+        self.assertEqual(result, {"e": 5})
+
+    def test_find_key(self):
+        nd = NestedData(self.data)
+        result = nd.find_key("c")
+        self.assertEqual(result, 2)
+
+    def test_find_value(self):
+        nd = NestedData(self.data)
+        result = nd.find_value(5)
+        self.assertEqual(result, {"e": 5})
+
+    def test_find_keyvalue(self):
+        nd = NestedData(self.data)
+        result = nd.find_keyvalue("c", 2)
+        self.assertEqual(result, {"c": 2, "d": [3, 4, {"e": 5}]})
 
 
 if __name__ == "__main__":
