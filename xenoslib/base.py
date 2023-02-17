@@ -49,33 +49,35 @@ def color(value, color_name="BLUE"):
 
 class NestedData:
     """
-    Utils for nested data.
+    Utilities for working with nested data structures such as lists, dictionaries, and tuples.
 
-    This class provides utility methods for searching and manipulating nested data structures (i.e.
-    lists, dictionaries, and tuples).
-    The class contains a number of methods for finding data in the nested structure based on
-    certain conditions.
-    The find_keys(), find_values(), and find_keyvalues() methods are specializations of the find()
-    method that search specifically for elements with matching keys, values, or key-value pairs,
-    respectively. The find_any_keyvalues() method searches for elements that contain any key or
-    value that matches a given variable.
-    The class also contains methods for finding a single result from the generator produced by one of
-    the find() methods. These methods include find_key(), find_value(), find_keyvalue(), and find_any().
-    The find_any() method finds the first key or value that matches a given variable, while the other
-    methods search for specific keys or values.
+    This class provides a set of methods for searching and manipulating nested data structures.
+    The find_keys(), find_values(), and find_keyvalues() methods are specialized find() methods
+    that search for elements with matching keys, values, or key-value pairs. The find_any_keyvalues()
+    method searches for elements that contain any key or value that matches a given variable.
+    The find_any() method finds the first key or value that matches a given variable, while the
+    other methods search for specific keys or values.
 
     The class maintains state through its result and path attributes, which are updated every time a
     result is found by one of the find() methods.
+
+    :param data: The data structure to search.
     """
 
     def __init__(self, data):
         self.data = data
-        self.result = None
-        self.path = None
-        self._condition = None
+        self.result = None  # The most recently found result.
+        self.path = None  # The path to the most recently found result.
+        self._condition = None  # The condition function used by the find() method.
 
     def _find(self, obj, path=""):
-        """Return generator."""
+        """
+        Recursively search the nested data structure for elements that match the condition function.
+
+        :param obj: The object to search.
+        :param path: The path to the object.
+        :yield: A generator that yields tuples of the object and its path.
+        """
         if isinstance(obj, dict):
             iter_obj = obj.items()
         elif isinstance(obj, (list, tuple)):
@@ -94,16 +96,26 @@ class NestedData:
             yield from self._find(v, new_path)
 
     def find(self, condition, ignore_exc=False):
-        """Return generator with (obj, path).
-        takes a condition function as an argument
-        returns a generator that yields all elements in the nested structure that satisfy that condition.
+        """
+        Find all elements in the nested data structure that match the condition function.
+
+        :param condition: The condition function.
+        :param ignore_exc: If True, ignore any exceptions raised by the condition function.
+        :return: A generator that yields tuples of the object and its path.
         """
         self.ignore_exc = ignore_exc
         self._condition = condition
         return self._find(self.data)
 
     def _find_one(self, method, *args, **kwagrs):
-        """Find one result from results."""
+        """
+        Find the first result from a generator produced by one of the find() methods.
+
+        :param method: The find() method to use.
+        :param args: The arguments to pass to the find() method.
+        :param kwagrs: The keyword arguments to pass to the find() method.
+        :return: The object that matches the condition, or None if no object is found.
+        """
         self.path = None
         self.result = None
         for obj, path in method(*args, **kwagrs):
@@ -113,7 +125,12 @@ class NestedData:
         return None
 
     def find_keys(self, key):
-        """Find all data with path matches key in generator."""
+        """
+        Find all elements in the nested data structure with matching keys.
+
+        :param key: The key to search for.
+        :return: A generator that yields tuples of the object and its path.
+        """
         return self.find(lambda k, v: k == key)
 
     def find_values(self, value):
