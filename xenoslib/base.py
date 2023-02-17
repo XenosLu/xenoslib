@@ -134,42 +134,105 @@ class NestedData:
         return self.find(lambda k, v: k == key)
 
     def find_values(self, value):
-        """Find all data that matches value and path for data."""
+        """
+        Find all data that matches a given value within the nested data.
+
+        Args:
+            value: The value to match against the nested data.
+
+        Returns:
+            A list of tuples containing the matched values and their corresponding paths.
+        """
         return self.find(lambda k, v: v == value)
 
     def find_keyvalues(self, key, value):
-        """Find all data that matches value and path for data."""
+        """
+        Find all data that matches a given key-value pair within the nested data.
+
+        Args:
+            key: The key to match against the nested data.
+            value: The value to match against the nested data.
+
+        Returns:
+            A list of tuples containing the matched key-value pairs and their corresponding paths.
+        """
         return self.find(lambda k, v: (k, v) == (key, value))
 
     def find_any_keyvalues(self, var):
-        """Find all data that matches key or value and path for data."""
+        """
+        Find all data that matches a given key or value within the nested data.
+
+        Args:
+            var: The key or value to match against the nested data.
+
+        Returns:
+            A list of tuples containing the matched keys or values and their corresponding paths.
+        """
         return self.find(lambda k, v: var in (k, v), ignore_exc=True)
 
     def find_any(self, var):
-        """Find key and path for data matches any key or value."""
+        """
+        Find all data that matches a given key or value within the nested data.
+
+        Args:
+            var: The key or value to match against the nested data.
+
+        Returns:
+            A tuple containing the first matched key or value and its corresponding path.
+        """
         return self._find_one(self.find_any_keyvalues, var)
 
     def find_key(self, key):
-        """Find key and path for data."""
+        """
+        Find the value associated with a given key within the nested data.
+
+        Args:
+            key: The key to search for in the nested data.
+
+        Returns:
+            The value associated with the given key if it is found in the nested data, otherwise None.
+        """
         result = self._find_one(self.find_keys, key)
         if result is not None:
             return result[key]
         return None
 
     def find_value(self, value):
-        """Find key and path for data."""
+        """
+        Find the key associated with a given value within the nested data.
+
+        Args:
+            value: The value to search for in the nested data.
+
+        Returns:
+            A tuple containing the first matched key and its corresponding path if the value is found in the nested data,
+            otherwise None.
+        """
         return self._find_one(self.find_values, value)
 
     def find_keyvalue(self, key, value):
-        """Find key and path for data match both key and value."""
+        """
+        Find the path to the key-value pair within the nested data.
+
+        Args:
+            key: The key to search for in the nested data.
+            value: The value to search for in the nested data.
+
+        Returns:
+            A tuple containing the first matched key-value pair and its corresponding path if it is found in the nested
+            data, otherwise None.
+        """
         return self._find_one(self.find_keyvalues, key, value)
 
     def show_result(self):
-        """Prints the most recently found result andits corresponding path."""
+        """
+        Print the most recently found result and its corresponding path.
+        """
         print("Nested data result: ")
         print(self.result)
         print("Nested data path:")
         print(self.path)
+
 
 
 class Singleton:
