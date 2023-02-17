@@ -48,16 +48,38 @@ def color(value, color_name="BLUE"):
 
 
 class NestedData:
-    """utils for nested data"""
+    """
+    Utils for nested data.
 
-    result = None
-    path = None
+    This class provides utility methods for searching and manipulating nested data structures (i.e.
+    lists, dictionaries, and tuples).
+    The class contains a number of methods for finding data in the nested structure based on
+    certain conditions.
+    The find_keys(), find_values(), and find_keyvalues() methods are specializations of the find()
+    method that search specifically for elements with matching keys, values, or key-value pairs,
+    respectively. The find_any_keyvalues() method searches for elements that contain any key or
+    value that matches a given variable.
+    The class also contains methods for finding a single result from the generator produced by one of
+    the find() methods. These methods include find_key(), find_value(), find_keyvalue(), and find_any().
+    The find_any() method finds the first key or value that matches a given variable, while the other
+    methods search for specific keys or values.
+
+    Finally, the class provides a show_result() method that prints the most recently found result and
+     its corresponding path.
+
+    The class maintains state through its result and path attributes, which are updated every time a
+     result is found by one of the find() methods.
+
+    """
 
     def __init__(self, data):
         self.data = data
+        self.result = None
+        self.path = None
+        self._condition = None
 
     def _find(self, obj, path=""):
-        """return generator"""
+        """Return generator."""
         if isinstance(obj, dict):
             iter_obj = obj.items()
         elif isinstance(obj, (list, tuple)):
@@ -76,13 +98,16 @@ class NestedData:
             yield from self._find(v, new_path)
 
     def find(self, condition, ignore_exc=False):
-        """return generator with (obj, path)"""
+        """Return generator with (obj, path).
+        takes a condition function as an argument
+        returns a generator that yields all elements in the nested structure that satisfy that condition.
+        """
         self.ignore_exc = ignore_exc
         self._condition = condition
         return self._find(self.data)
 
     def _find_one(self, method, *args, **kwagrs):
-        """find one result from results"""
+        """Find one result from results."""
         self.path = None
         self.result = None
         for obj, path in method(*args, **kwagrs):
@@ -92,38 +117,38 @@ class NestedData:
         return None
 
     def find_keys(self, key):
-        """find all data with path matches key in generator"""
+        """Find all data with path matches key in generator."""
         return self.find(lambda k, v: k == key)
 
     def find_values(self, value):
-        """find all data that matches value and path for data"""
+        """Find all data that matches value and path for data."""
         return self.find(lambda k, v: v == value)
 
     def find_keyvalues(self, key, value):
-        """find all data that matches value and path for data"""
+        """Find all data that matches value and path for data."""
         return self.find(lambda k, v: (k, v) == (key, value))
 
     def find_any_keyvalues(self, var):
-        """find all data that matches key or value and path for data"""
+        """Find all data that matches key or value and path for data."""
         return self.find(lambda k, v: var in (k, v), ignore_exc=True)
 
     def find_any(self, var):
-        """find key and path for data matches any key or value"""
+        """Find key and path for data matches any key or value."""
         return self._find_one(self.find_any_keyvalues, var)
 
     def find_key(self, key):
-        """find key and path for data"""
+        """Find key and path for data."""
         result = self._find_one(self.find_keys, key)
         if result is not None:
             return result[key]
         return None
 
     def find_value(self, value):
-        """find key and path for data"""
+        """Find key and path for data."""
         return self._find_one(self.find_values, value)
 
     def find_keyvalue(self, key, value):
-        """find key and path for data match both key and value"""
+        """Find key and path for data match both key and value."""
         return self._find_one(self.find_keyvalues, key, value)
 
     def show_result(self):
@@ -221,19 +246,12 @@ def monkey_patch(module, obj_name, obj, package=None):
 
 
 if __name__ == "__main__":
-    data = {
-        "d": [
-            {"id": 1},
-            {"id": 2},
-            {"id": 3},
-            {"id": 4},
-            [{"id": 3}],
-            "ixxx",
-        ]
-    }
+    data = {"a": 1, "b": {"c": 2, "d": [3, 4, {"e": 5}]}, "f": (6, 7, {"g": 8})}
     n = NestedData(data)
 
     from pprint import pprint
 
-    pprint(list(n.find_keys("id")))
-    pprint(list(n.find(lambda k, v: "i" in v, ignore_exc=True)))
+    pprint(list(n.search("b")))
+    # pprint(list(n.search(1)))
+    # n.show_result()
+    # pprint(list(n.find(lambda k, v: "i" in v, ignore_exc=True)))
