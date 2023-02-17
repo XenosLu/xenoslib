@@ -64,12 +64,8 @@ class NestedData:
     The find_any() method finds the first key or value that matches a given variable, while the other
     methods search for specific keys or values.
 
-    Finally, the class provides a show_result() method that prints the most recently found result and
-     its corresponding path.
-
     The class maintains state through its result and path attributes, which are updated every time a
-     result is found by one of the find() methods.
-
+    result is found by one of the find() methods.
     """
 
     def __init__(self, data):
@@ -152,6 +148,7 @@ class NestedData:
         return self._find_one(self.find_keyvalues, key, value)
 
     def show_result(self):
+        """Prints the most recently found result andits corresponding path."""
         print("Nested data result: ")
         print(self.result)
         print("Nested data path:")
