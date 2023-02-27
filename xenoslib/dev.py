@@ -32,6 +32,7 @@ class RestartWhenModified:
                 self.restart()
             self.records[file] = mtime_now
 
-    def restart(self):
+    @staticmethod
+    def restart():
         python = sys.executable
         os.execl(python, python, *[f'"{i}"' if " " in i else i for i in sys.argv])
