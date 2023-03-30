@@ -120,7 +120,7 @@ def send_notify(msg, key):
     """send a message for ifttt"""
     url = f"https://maker.ifttt.com/trigger/message/with/key/{key}"
     data = {"value1": msg}
-    return requests.post(url, data=data)
+    return requests.post(url, data=data, timeout=(30, 30))
 
 
 class IFTTTLogHandler(logging.Handler):
@@ -139,6 +139,27 @@ class IFTTTLogHandler(logging.Handler):
     def emit(self, record):
         try:
             send_notify(self.format(record), self.key)
+        except Exception as exc:
+            print(exc)
+
+
+class SlackLogHandler(logging.Handler):
+    """
+    log handler for IFTTT
+    usage：
+    slackloghandler = SlackLogHandler(webhook_url, level=logging.INFO)
+    logging.getLogger(__name__).addHandler(slackloghandler)
+    """
+
+    def __init__(self, webhook_url, level=logging.CRITICAL, *args, **kwargs):
+        self.url = webhook_url
+        self.headers = {"Content-type": "application/json"}
+        super().__init__(level=level, *args, **kwargs)
+
+    def emit(self, record):
+        try:
+            data = {"text": self.format(record)}
+            requests.post(self.url, headers=self.headers, json=data, timeout=(30, 30))
         except Exception as exc:
             print(exc)
 
