@@ -113,7 +113,7 @@ class SMTPMail:
         try:
             smtp.login(self.sender, self.pasword)
         except Exception as exc:
-            print(exc)
+            logger.warning(exc)
             return False
         smtp.sendmail(self.sender, receiver, msg.as_string())
         smtp.quit()
