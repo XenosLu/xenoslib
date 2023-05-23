@@ -1,5 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Description: Utility functions for fetching and sending emails.
+
+Usage:
+from xenoslib.mail import EmailFetcher, EmailSender
+
+# Fetch emails
+for email_data in EmailFetcher(imap_server, mail_addr, mail_pwd, interval=30, days=30):
+    print(email_data["subject"])
+
+# Send email
+sender = EmailSender(smtp_server, sender, password, smtp_port=25)
+sender.send(subject, message, receiver, cc, bcc, filename)
+
+"""
 import os
 import datetime
 from time import sleep
@@ -84,11 +99,11 @@ class MailFetcher:
 
 
 class SMTPMail:
-    def __init__(self, smtp_server="", sender="", pasword="", smtp_port=25):
+    def __init__(self, smtp_server="", sender="", password="", smtp_port=25):
         self.smtp_server = smtp_server
         self.smtp_port = int(smtp_port)
         self.sender = sender
-        self.pasword = pasword
+        self.password = password
         if self.smtp_port == 25:
             self.SMTP = smtplib.SMTP
         else:
@@ -111,7 +126,7 @@ class SMTPMail:
 
         smtp = self.SMTP(self.smtp_server, self.smtp_port)
         try:
-            smtp.login(self.sender, self.pasword)
+            smtp.login(self.sender, self.password)
         except Exception as exc:
             logger.warning(exc)
             return False
@@ -125,9 +140,9 @@ def test_imap():
         import env  # noqa
     except ModuleNotFoundError:
         pass
-    imap_server = os.environ["imap_server"]
-    mail_addr = os.environ["imap_addr"]
-    mail_pwd = os.environ["imap_pass"]
+    imap_server = os.environ["IMAP_SERVER"]
+    mail_addr = os.environ["IMAP_ADDR"]
+    mail_pwd = os.environ["IMAP_PASS"]
     for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=1, days=30):
         print(email_data["subject"])
 
@@ -140,8 +155,10 @@ def test():
     mail_addr = os.environ["SMTP_ADDR"]
     mail_pwd = os.environ["SMTP_PASS"]
     smtp_server = os.environ["SMTP_SERVER"]
-    mail = SMTPMail(smtp_server, sender=mail_addr, pasword=mail_pwd, smtp_port=465)
-    mail.send(subject="test", message="test mail", receiver=[os.environ["RECEIVER"]])
+    subject = "Test Email"
+    message = "This is a test email."
+    email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, smtp_port=465)
+    email_sender.send(subject=subject, message=message, receiver=[os.environ["RECEIVER"]])
 
 
 if __name__ == "__main__":
