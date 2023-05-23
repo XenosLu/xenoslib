@@ -70,15 +70,10 @@ class MailFetcher:
         logger.debug(f"fetching mails in {self.days} day(s)...")
         date_str = datetime.datetime.today() - datetime.timedelta(days=self.days)
         with IMAPClient(self.imap_server, timeout=30) as client:
-            logger.debug("imap login")
             client.login(self.mail_addr, self.mail_pwd)
-            logger.debug("select inbox")
             client.select_folder("INBOX", readonly=True)
-            logger.debug("search inbox")
             messages = client.search(["SINCE", date_str])
-            logger.debug("fetch mail")
             mails = client.fetch(messages, ["INTERNALDATE", "BODY.PEEK[]"])
-            logger.debug("fetching mails finished")
             return mails
 
 
