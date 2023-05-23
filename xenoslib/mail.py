@@ -17,7 +17,7 @@ sender.send(subject, message, receiver, cc, bcc, filename)
 """
 import os
 import datetime
-from time import sleep
+from time import sleep, time
 import logging
 from collections import deque
 import smtplib
@@ -115,6 +115,7 @@ class SMTPMail:
         msg["From"] = Header(self.sender, "utf-8")
         msg["To"] = ";".join(receiver)
         msg["Cc"] = ";".join(cc)
+        msg["Message-ID"] = f"<{time()}>"
         receiver.extend(cc)
         receiver.extend(bcc)
         msg.attach(MIMEText(message, "html", "utf-8"))
@@ -124,16 +125,16 @@ class SMTPMail:
             attachment.add_header("Content-Disposition", "attachment", filename=filename)
             msg.attach(attachment)
 
-        smtp = self.SMTP(self.smtp_server, self.smtp_port)
-        try:
-            smtp.login(self.sender, self.password)
-        except Exception as exc:
-            logger.warning(exc)
-            return False
-        smtp.sendmail(self.sender, receiver, msg.as_string())
-        smtp.quit()
-        return True
-
+        with smtplib.SMTP(self.smtp_server, self.smtp_port) as smtp:
+            if smtp.has_extn("STARTTLS"):
+                smtp.starttls()
+            try:
+                smtp.login(self.sender, self.password)
+            except Exception as exc:
+                logger.warning(exc)
+                return False
+            smtp.sendmail(self.sender, receiver, msg.as_string())
+            return True
 
 def test_imap():
     try:
@@ -155,8 +156,8 @@ def test():
     mail_addr = os.environ["SMTP_ADDR"]
     mail_pwd = os.environ["SMTP_PASS"]
     smtp_server = os.environ["SMTP_SERVER"]
-    subject = "Test Email"
-    message = "This is a test email."
+    subject = "Test Email2"
+    message = '<span style="color:red">This is a test email.</span>'
     email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, smtp_port=465)
     email_sender.send(subject=subject, message=message, receiver=[os.environ["RECEIVER"]])
 
