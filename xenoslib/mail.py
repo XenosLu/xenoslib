@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-import email
 import datetime
 from time import sleep
 import logging
 from collections import deque
+import smtplib
+import email
+from email.mime.text import MIMEText
+from email.header import Header
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 
 from imapclient import IMAPClient
 
@@ -78,7 +83,44 @@ class MailFetcher:
             return emails
 
 
-def test():
+class SMTPMail:
+    def __init__(self, smtp_server="", sender="", pasword="", smtp_port=25):
+        self.smtp_server = smtp_server
+        self.smtp_port = int(smtp_port)
+        self.sender = sender
+        self.pasword = pasword
+        if self.smtp_port == 25:
+            self.SMTP = smtplib.SMTP
+        else:
+            self.SMTP = smtplib.SMTP_SSL
+
+    def send(self, subject, message, receiver=[], cc=[], bcc=[], filename=None):
+        msg = MIMEMultipart()
+        msg["Subject"] = Header(subject, "utf-8")
+        msg["From"] = Header(self.sender, "utf-8")
+        msg["To"] = ";".join(receiver)
+        msg["Cc"] = ";".join(cc)
+        receiver.extend(cc)
+        receiver.extend(bcc)
+        msg.attach(MIMEText(message, "html", "utf-8"))
+
+        if filename:
+            attachment = MIMEApplication(open(filename, "rb").read())
+            attachment.add_header("Content-Disposition", "attachment", filename=filename)
+            msg.attach(attachment)
+
+        smtp = self.SMTP(self.smtp_server, self.smtp_port)
+        try:
+            smtp.login(self.sender, self.pasword)
+        except Exception as exc:
+            print(exc)
+            return False
+        smtp.sendmail(self.sender, receiver, msg.as_string())
+        smtp.quit()
+        return True
+
+
+def test_imap():
     try:
         import env  # noqa
     except ModuleNotFoundError:
@@ -88,6 +130,18 @@ def test():
     mail_pwd = os.environ["imap_pass"]
     for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=1, days=30):
         print(email_data["subject"])
+
+
+def test():
+    try:
+        import env  # noqa
+    except ModuleNotFoundError:
+        pass
+    mail_addr = os.environ["SMTP_ADDR"]
+    mail_pwd = os.environ["SMTP_PASS"]
+    smtp_server = os.environ["SMTP_SERVER"]
+    mail = SMTPMail(smtp_server, sender=mail_addr, pasword=mail_pwd, smtp_port=465)
+    mail.send(subject="test", message="test mail", receiver=[os.environ["RECEIVER"]])
 
 
 if __name__ == "__main__":
