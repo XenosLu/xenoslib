@@ -18,7 +18,7 @@ class MailFetcher:
     Fetch emails from mail inbox using IMAP protocol.
     Usage:
 
-    for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=1, days=33):
+    for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=30, days=30):
         print(email_data["subject"])
     """
 
@@ -85,7 +85,7 @@ def test():
     imap_server = os.environ["imap_server"]
     mail_addr = os.environ["imap_addr"]
     mail_pwd = os.environ["imap_pass"]
-    for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=1, days=33):
+    for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=1, days=30):
         print(email_data["subject"])
 
 

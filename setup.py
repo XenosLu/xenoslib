@@ -21,6 +21,7 @@ setup(
     url=about.__url__,
     install_requires=[
         "PyYAML>=5.4",
+        "IMAPClient>=2.3.1",
     ],
     python_requires=">=3.7",
     extras_require={
