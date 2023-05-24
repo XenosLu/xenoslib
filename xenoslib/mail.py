@@ -44,14 +44,18 @@ class MailFetcher:
         print(email_data["subject"])
     """
 
-    msg_ids = deque(maxlen=999)
-
-    def __new__(cls, imap_server, mail_addr, mail_pwd, interval=30, days=1):
+    def __new__(cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, skip_current=False):
         self = super().__new__(cls)
         self.imap_server = imap_server
         self.mail_addr = mail_addr
         self.mail_pwd = mail_pwd
         self.days = days
+
+        self.msg_ids = deque(maxlen=999)
+        if skip_current:  # mark current mails
+            logger.debug("Skipping...")
+            mails = self.fetch_emails()
+            self.msg_ids.extend(mails.keys())
         return self.fetching(interval=interval)
 
     def fetching(self, interval=30):
@@ -147,7 +151,9 @@ def test_imap():
     imap_server = os.environ["IMAP_SERVER"]
     mail_addr = os.environ["IMAP_ADDR"]
     mail_pwd = os.environ["IMAP_PASS"]
-    for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=1, days=30):
+    for email_data in MailFetcher(
+        imap_server, mail_addr, mail_pwd, interval=1, days=30, skip_current=True
+    ):
         print(email_data["subject"])
 
 
@@ -167,4 +173,5 @@ def test():
 
 
 if __name__ == "__main__":
-    test()
+    test_imap()
+    # test()
