@@ -37,11 +37,6 @@ logger = logging.getLogger(__name__)
 class MailFetcher:
     """
     Fetch emails from mail inbox using IMAP protocol.
-    Usage:
-
-    from xenoslib.mail import MailFetcher
-    for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=30, days=30):
-        print(email_data["subject"])
     """
 
     def __new__(cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, skip_current=False):
