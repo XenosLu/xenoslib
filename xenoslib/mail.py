@@ -48,7 +48,7 @@ class MailFetcher:
 
         self.msg_ids = deque(maxlen=999)
         if skip_current:  # mark and skip current mails
-            logger.debug("Skipping exists mails...")
+            logger.debug("Skipping existing emails...")
             mails = self.fetch_emails()
             self.msg_ids.extend(mails.keys())
         return self.fetching(interval=interval)
