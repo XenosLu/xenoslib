@@ -17,7 +17,7 @@ sender.send(subject, message, receiver, cc, bcc, filename)
 """
 import os
 import datetime
-from time import sleep, time
+from time import sleep
 import logging
 from collections import deque
 import smtplib
@@ -26,6 +26,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
+from email.utils import make_msgid
 
 from imapclient import IMAPClient
 
@@ -104,10 +105,10 @@ class SMTPMail:
         self.smtp_port = int(smtp_port)
         self.sender = sender
         self.password = password
-        if self.smtp_port == 25:
-            self.SMTP = smtplib.SMTP
-        else:
+        if self.smtp_port == 465:
             self.SMTP = smtplib.SMTP_SSL
+        else:
+            self.SMTP = smtplib.SMTP
 
     def send(self, subject, message, receiver=[], cc=[], bcc=[], filename=None):
         msg = MIMEMultipart()
@@ -115,7 +116,7 @@ class SMTPMail:
         msg["From"] = Header(self.sender, "utf-8")
         msg["To"] = ";".join(receiver)
         msg["Cc"] = ";".join(cc)
-        msg["Message-ID"] = f"<{time()}>"
+        msg["Message-ID"] = make_msgid()
         receiver.extend(cc)
         receiver.extend(bcc)
         msg.attach(MIMEText(message, "html", "utf-8"))
@@ -125,7 +126,8 @@ class SMTPMail:
             attachment.add_header("Content-Disposition", "attachment", filename=filename)
             msg.attach(attachment)
 
-        with smtplib.SMTP(self.smtp_server, self.smtp_port) as smtp:
+        with self.SMTP(self.smtp_server, self.smtp_port) as smtp:
+            print(smtp.has_extn("STARTTLS"))
             if smtp.has_extn("STARTTLS"):
                 smtp.starttls()
             try:
@@ -159,6 +161,7 @@ def test():
     subject = "Test Email2"
     message = '<span style="color:red">This is a test email.</span>'
     email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, smtp_port=465)
+    # email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, smtp_port=587)
     email_sender.send(subject=subject, message=message, receiver=[os.environ["RECEIVER"]])
 
 
