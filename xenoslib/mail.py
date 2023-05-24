@@ -138,6 +138,7 @@ class SMTPMail:
             smtp.sendmail(self.sender, receiver, msg.as_string())
             return True
 
+
 def test_imap():
     try:
         import env  # noqa
