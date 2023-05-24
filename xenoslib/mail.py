@@ -4,14 +4,14 @@
 Description: Utility functions for fetching and sending emails.
 
 Usage:
-from xenoslib.mail import EmailFetcher, EmailSender
+from xenoslib.mail import MailFetcher, SMTPMail
 
 # Fetch emails
-for email_data in EmailFetcher(imap_server, mail_addr, mail_pwd, interval=30, days=30):
+for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=30, days=30):
     print(email_data["subject"])
 
 # Send email
-sender = EmailSender(smtp_server, sender, password, smtp_port=25)
+sender = SMTPMail(smtp_server, sender, password, smtp_port=25)
 sender.send(subject, message, receiver, cc, bcc, filename)
 
 """
@@ -39,7 +39,7 @@ class MailFetcher:
     Fetch emails from mail inbox using IMAP protocol.
     """
 
-    def __new__(cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, skip_current=False):
+    def __new__(cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, skip_current=True):
         self = super().__new__(cls)
         self.imap_server = imap_server
         self.mail_addr = mail_addr
@@ -47,8 +47,8 @@ class MailFetcher:
         self.days = days
 
         self.msg_ids = deque(maxlen=999)
-        if skip_current:  # mark current mails
-            logger.debug("Skipping...")
+        if skip_current:  # mark and skip current mails
+            logger.debug("Skipping exists mails...")
             mails = self.fetch_emails()
             self.msg_ids.extend(mails.keys())
         return self.fetching(interval=interval)
