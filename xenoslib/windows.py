@@ -105,6 +105,7 @@ class Environment:
         self.refresh()
 
 
+
 def add_windows_path_env(new_path):
     """Add directory to Windows path environment variable"""
     env = Environment()
