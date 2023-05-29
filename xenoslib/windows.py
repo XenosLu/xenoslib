@@ -108,10 +108,10 @@ def timeout(seconds):
 
 
 def test():
-    add_windows_path_env('c:\\falloutx')
+    add_windows_path_env("c:\\falloutx")
     print("added")
     pause()
 
+
 if __name__ == "__main__":
     RunAsAdmin(test, cmd=True)
-
