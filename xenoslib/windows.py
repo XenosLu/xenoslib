@@ -104,9 +104,6 @@ class Environment:
             self.set(key, value)
         self.refresh()
 
-    def set_and_update(self, key, value):
-        self.set(key, value)
-        self.refresh()
 
 def add_windows_path_env(new_path):
     """Add directory to Windows path environment variable"""
@@ -120,7 +117,7 @@ def add_windows_path_env(new_path):
         path_list.append(new_path)
         new_path_list = ";".join(path_list)
         try:
-            env.set_and_update("Path", new_path_list)
+            env.update({"Path": new_path_list})
             print(f"Added {new_path} to the path")
             return True
         except Exception as exc:
