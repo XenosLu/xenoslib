@@ -90,7 +90,6 @@ class Environment:
             winreg.HKEY_LOCAL_MACHINE, self.reg_path, 0, winreg.KEY_ALL_ACCESS
         ) as reg_key:
             winreg.SetValueEx(reg_key, key, 0, winreg.REG_EXPAND_SZ, value)
-            self.refresh()
             print(f"Setted [{key}] to windows environment.")
 
     def get(self, key):
@@ -103,8 +102,11 @@ class Environment:
     def update(self, environs):
         for key, value in environs.items():
             self.set(key, value)
-            # print(key, value)
+        self.refresh()
 
+    def set_and_update(self, key, value):
+        self.set(key, value)
+        self.refresh()
 
 def add_windows_path_env(new_path):
     """Add directory to Windows path environment variable"""
@@ -118,7 +120,7 @@ def add_windows_path_env(new_path):
         path_list.append(new_path)
         new_path_list = ";".join(path_list)
         try:
-            env.set("Path", new_path_list)
+            env.set_and_update("Path", new_path_list)
             print(f"Added {new_path} to the path")
             return True
         except Exception as exc:
