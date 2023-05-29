@@ -8,8 +8,8 @@ import msvcrt
 import winreg
 
 
-def refresh():
-    """refresh after update registry"""
+def refresh_update_env():
+    """refresh after update environment"""
     HWND_BROADCAST = 0xFFFF
     WM_SETTINGCHANGE = 0x1A
     SMTO_ABORTIFHUNG = 0x0002
@@ -27,8 +27,8 @@ def refresh():
 
 
 def add_windows_path_env(new_path):
-    """add directory to Windows path environment variable"""
-    print("add dircetory to path: %s" % new_path)
+    """Add directory to Windows path environment variable"""
+    print(f"Adding directory to path: {new_path}")
     path_key = winreg.OpenKey(
         winreg.HKEY_LOCAL_MACHINE,
         r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
@@ -38,13 +38,20 @@ def add_windows_path_env(new_path):
     path_str, _ = winreg.QueryValueEx(path_key, "Path")
     path_list = path_str.split(";")
     if new_path in path_list:
-        print("%s exists" % new_path)
+        print(f"{new_path} already exists in the path")
+        return False
     else:
-        print("added %s" % new_path)
+        print(f"Added {new_path} to the path")
         path_list.append(new_path)
         new_path = ";".join(path_list)
         winreg.SetValueEx(path_key, "Path", 0, winreg.REG_EXPAND_SZ, new_path)
-    # refresh()
+        try:
+            winreg.SetValueEx(path_key, "Path", 0, winreg.REG_EXPAND_SZ, new_path)
+            refresh_update_env()
+            return True
+        except Exception as exc:
+            print(f"Failed to update the path: {str(exc)}")
+            return False
 
 
 class RunAsAdmin:
@@ -98,3 +105,13 @@ def timeout(seconds):
         print(f"Waiting {second}s , press any key to continue...", end="\r")
         time.sleep(1)
     print()  # make sure the message won't be covered
+
+
+def test():
+    add_windows_path_env('c:\\falloutx')
+    print("added")
+    pause()
+
+if __name__ == "__main__":
+    RunAsAdmin(test, cmd=True)
+
