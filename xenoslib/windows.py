@@ -127,7 +127,7 @@ def add_windows_path_env(new_path):
 
 
 def test():
-    add_windows_path_env("c:\\abcde")
+    add_windows_path_env("c:\\abc")
     pause()
 
 
