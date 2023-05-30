@@ -69,21 +69,16 @@ class MailFetcher:
                 continue
             body = email.message_from_bytes(msg[b"BODY[]"])
             subject = str(email.header.make_header(email.header.decode_header(body["Subject"])))
-            sender = body["From"]
-            date = body["Date"]
+
             payload = body.get_payload(decode=True)
             if payload:
                 payload = payload.decode()
             internal_date = msg[b"INTERNALDATE"]
-            email_data = {
-                "body": body,
-                "subject": subject,
-                "payload": payload,
-                "date": date,
-                "sender": sender,
-                "internal_date": internal_date,
-            }
-            yield email_data
+            
+            body['subject'] = subject
+            body['payload'] = payload
+            body['internal_date'] = internal_date
+            yield body
             self.msg_ids.append(msg_id)
 
     def fetch_emails(self):
