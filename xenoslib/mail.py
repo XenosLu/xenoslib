@@ -74,10 +74,9 @@ class MailFetcher:
             if payload:
                 payload = payload.decode()
             internal_date = msg[b"INTERNALDATE"]
-            
-            body['subject'] = subject
-            body['payload'] = payload
-            body['internal_date'] = internal_date
+            body["subjectx"] = subject
+            body["payload"] = payload
+            body["internal_date"] = internal_date
             yield body
             self.msg_ids.append(msg_id)
 
