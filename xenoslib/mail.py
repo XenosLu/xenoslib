@@ -39,7 +39,9 @@ class MailFetcher:
     Fetch emails from mail inbox using IMAP protocol.
     """
 
-    def __new__(cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, skip_current=True):
+    def __new__(
+        cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, skip_current=True, endless=True
+    ):
         self = super().__new__(cls)
         self.imap_server = imap_server
         self.mail_addr = mail_addr
@@ -47,13 +49,15 @@ class MailFetcher:
         self.days = days
 
         self.msg_ids = deque(maxlen=999)
+        if not endless:
+            skip_current = False
         if skip_current:  # mark and skip current mails
             logger.debug("Skipping existing emails...")
             mails = self.fetch_emails()
             self.msg_ids.extend(mails.keys())
-        return self.fetching(interval=interval)
+        return self.fetching(interval=interval, endless=endless)
 
-    def fetching(self, interval=30):
+    def fetching(self, interval=30, endless=True):
         """Continuously fetch emails at the specified interval."""
         logger.debug("Start checking emails...")
         while True:
@@ -61,6 +65,8 @@ class MailFetcher:
                 yield from self.parse_emails(self.fetch_emails())
             except Exception as exc:
                 logger.warning(exc)
+            if not endless:
+                break
             sleep(interval)
 
     def parse_emails(self, emails):
