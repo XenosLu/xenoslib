@@ -11,7 +11,7 @@ for email_data in MailFetcher(imap_server, mail_addr, mail_pwd, interval=30, day
     print(email_data["subject"])
 
 # Send email
-sender = SMTPMail(smtp_server, sender, password, smtp_port=25)
+sender = SMTPMail(smtp_server, sender, password, port=25)
 sender.send(subject, message, receiver, cc, bcc, filename)
 
 """
@@ -99,12 +99,12 @@ class MailFetcher:
 
 
 class SMTPMail:
-    def __init__(self, smtp_server="", sender="", password="", smtp_port=25):
+    def __init__(self, smtp_server="", sender="", password="", port=25):
         self.smtp_server = smtp_server
-        self.smtp_port = int(smtp_port)
+        self.port = int(port)
         self.sender = sender
         self.password = password
-        if self.smtp_port == 465:
+        if self.port == 465:  # use SSL by port
             self.SMTP = smtplib.SMTP_SSL
         else:
             self.SMTP = smtplib.SMTP
@@ -125,7 +125,7 @@ class SMTPMail:
             attachment.add_header("Content-Disposition", "attachment", filename=filename)
             msg.attach(attachment)
 
-        with self.SMTP(self.smtp_server, self.smtp_port) as smtp:
+        with self.SMTP(self.smtp_server, self.port) as smtp:
             print(smtp.has_extn("STARTTLS"))
             if smtp.has_extn("STARTTLS"):
                 smtp.starttls()
@@ -162,8 +162,8 @@ def test():
     smtp_server = os.environ["SMTP_SERVER"]
     subject = "Test Email2"
     message = '<span style="color:red">This is a test email.</span>'
-    email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, smtp_port=465)
-    # email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, smtp_port=587)
+    email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=465)
+    # email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=587)
     email_sender.send(subject=subject, message=message, receiver=[os.environ["RECEIVER"]])
 
 
