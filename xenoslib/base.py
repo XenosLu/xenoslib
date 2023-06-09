@@ -323,6 +323,32 @@ def monkey_patch(module, obj_name, obj, package=None):
             monkey_patch(v, obj_name, obj, package)
 
 
+def get_dict_val(dictionary, *args):
+    """
+    Usage:
+    my_dict = {"name": "John", "age": 30, "city": "New York"}
+    result = filter_dict_by_keys(environ, "CLIENT_SECRET", "age")
+    print(result)  # Output: {'name': 'John', 'age': 30}
+    """
+    return {key: value for key, value in dictionary.items() if key in args}
+
+
+def get_attr_val(obj, *args):
+    """
+    Usage:
+    class Person:
+        def __init__(self, name, age, city):
+            self.name = name
+            self.age = age
+            self.city = city
+
+    person = Person("John", 30, "New York")
+    attributes = get_attr_val(person, "name", "age")
+    print(attributes)  # Output: {'name': 'John', 'age': 30}
+    """
+    return {attr: getattr(obj, attr) for attr in args}
+
+
 if __name__ == "__main__":
     data = {"a": 1, "b": {"c": 2, "d": [3, 4, {"e": 5}]}, "f": (6, 7, {"g": 8})}
     n = NestedData(data)
