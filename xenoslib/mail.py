@@ -109,8 +109,7 @@ class SMTPMail:
         else:
             self.SMTP = smtplib.SMTP
 
-    def send(self, subject, message, receiver, cc=[], bcc=[], filename=None):
-        receivers = []
+    def send(self, subject, message, receiver, receivers=[], cc=[], bcc=[], filename=None):
         if isinstance(receiver, str):
             receivers.append(receiver)
         elif isinstance(receiver, (list, tuple)):
