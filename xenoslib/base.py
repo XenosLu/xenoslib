@@ -235,6 +235,8 @@ class NestedData:
 
 
 class Singleton:
+    """Please note that __init__() will still run every time"""
+
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "_instance"):
             cls._instance = super().__new__(cls)

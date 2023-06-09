@@ -109,15 +109,20 @@ class SMTPMail:
         else:
             self.SMTP = smtplib.SMTP
 
-    def send(self, subject, message, receiver=[], cc=[], bcc=[], filename=None):
+    def send(self, subject, message, receiver, cc=[], bcc=[], filename=None):
+        receivers = []
+        if isinstance(receiver, str):
+            receivers.append(receiver)
+        elif isinstance(receiver, (list, tuple)):
+            receivers.extend(receiver)
         msg = MIMEMultipart()
         msg["Subject"] = Header(subject, "utf-8")
         msg["From"] = Header(self.sender, "utf-8")
-        msg["To"] = ";".join(receiver)
+        msg["To"] = ";".join(receivers)
         msg["Cc"] = ";".join(cc)
         msg["Message-ID"] = make_msgid()
-        receiver.extend(cc)
-        receiver.extend(bcc)
+        receivers.extend(cc)
+        receivers.extend(bcc)
         msg.attach(MIMEText(message, "html", "utf-8"))
 
         if filename:
@@ -134,7 +139,7 @@ class SMTPMail:
             except Exception as exc:
                 logger.warning(exc)
                 return False
-            smtp.sendmail(self.sender, receiver, msg.as_string())
+            smtp.sendmail(self.sender, receivers, msg.as_string())
             return True
 
 
@@ -164,9 +169,9 @@ def test():
     message = '<span style="color:red">This is a test email.</span>'
     email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=465)
     # email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=587)
-    email_sender.send(subject=subject, message=message, receiver=[os.environ["RECEIVER"]])
+    email_sender.send(subject=subject, message=message, receiver=os.environ["RECEIVER"])
 
 
 if __name__ == "__main__":
-    test_imap()
-    # test()
+    # test_imap()
+    test()
