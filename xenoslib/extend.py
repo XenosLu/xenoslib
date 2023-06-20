@@ -145,7 +145,7 @@ class IFTTTLogHandler(logging.Handler):
 
 class SlackLogHandler(logging.Handler):
     """
-    log handler for IFTTT
+    log handler for Slack
     usage：
     slackloghandler = SlackLogHandler(webhook_url, level=logging.INFO)
     logging.getLogger(__name__).addHandler(slackloghandler)
@@ -160,6 +160,34 @@ class SlackLogHandler(logging.Handler):
         try:
             data = {"text": self.format(record)}
             requests.post(self.url, headers=self.headers, json=data, timeout=(30, 30))
+        except Exception as exc:
+            print(exc)
+
+
+class DingTalkLogHandler(logging.Handler):
+    """
+    log handler for DingTalk
+    usage：
+    token = 'xxxxx.xxxzx.xxxzx.xxxzx'
+    dingtalkloghandler = DingTalkLogHandler(token, level=logging.INFO)
+    logging.getLogger(__name__).addHandler(dingtalkloghandler)
+    """
+
+    def __init__(self, token, level=logging.CRITICAL, *args, **kwargs):
+        self.token = token
+        super().__init__(level=level, *args, **kwargs)
+
+    def emit(self, record):
+        headers = {"Content-Type": "application/json"}
+        url = "https://oapi.dingtalk.com/robot/send"
+        params = {"access_token": self.token}
+        msg = self.format(record)
+        data = {"msgtype": "text", "text": {"content": msg}}
+        try:
+            response = requests.post(
+                url, headers=headers, params=params, json=data, timeout=(10, 10)
+            )
+            print(response.json())
         except Exception as exc:
             print(exc)
 
