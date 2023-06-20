@@ -110,8 +110,6 @@ class SMTPMail:
             self.SMTP = smtplib.SMTP
 
     def send(self, subject, message, receiver=None, receivers=None, cc=None, bcc=None, filename=None):
-        if receiver is None:
-            receiver = []
         if receivers is None:
             receivers = []
 
