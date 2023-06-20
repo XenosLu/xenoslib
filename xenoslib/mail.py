@@ -115,7 +115,6 @@ class SMTPMail:
     ):
         if receivers is None:
             receivers = []
-
         if isinstance(receiver, str):
             receivers.append(receiver)
         elif isinstance(receiver, (list, tuple)):
@@ -130,9 +129,7 @@ class SMTPMail:
         if bcc:
             receivers.extend(bcc)
         msg["Message-ID"] = make_msgid()
-
         msg.attach(MIMEText(message, "html", "utf-8"))
-
         if filename:
             attachment = MIMEApplication(open(filename, "rb").read())
             attachment.add_header("Content-Disposition", "attachment", filename=filename)
