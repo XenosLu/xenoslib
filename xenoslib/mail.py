@@ -61,10 +61,7 @@ class MailFetcher:
         """Continuously fetch emails at the specified interval."""
         logger.debug("Start checking emails...")
         while True:
-            try:
-                yield from self.parse_emails(self.fetch_emails())
-            except Exception as exc:
-                logger.warning(exc)
+            yield from self.parse_emails(self.fetch_emails())
             if not endless:
                 break
             sleep(interval)
@@ -79,10 +76,9 @@ class MailFetcher:
             payload = body.get_payload(decode=True)
             if payload:
                 payload = payload.decode()
-            internal_date = msg[b"INTERNALDATE"]
             body["subjectx"] = subject
             body["payload"] = payload
-            body["internal_date"] = internal_date
+            body["internal_date"] = msg[b"INTERNALDATE"]
             yield body
             self.msg_ids.append(msg_id)
 
@@ -90,13 +86,17 @@ class MailFetcher:
         """Login and fetch emails."""
         logger.debug(f"Fetching emails from the past {self.days} day(s)...")
         date_str = datetime.datetime.today() - datetime.timedelta(days=self.days)
-        with IMAPClient(self.imap_server, timeout=30) as client:
-            client.login(self.mail_addr, self.mail_pwd)
-            client.select_folder("INBOX", readonly=True)
-            messages = client.search(["SINCE", date_str])
-            emails = client.fetch(messages, ["INTERNALDATE", "BODY.PEEK[]"])
-            return emails
-
+        for i in range(3):
+            try:
+                with IMAPClient(self.imap_server, timeout=30) as client:
+                    client.login(self.mail_addr, self.mail_pwd)
+                    client.select_folder("INBOX", readonly=True)
+                    messages = client.search(["SINCE", date_str])
+                    emails = client.fetch(messages, ["INTERNALDATE", "BODY.PEEK[]"])
+                    return emails
+            except Exception as exc:
+                logger.warning(exc)
+        raise Exception("Reached maximum retry attempts. Giving up connection.")
 
 class SMTPMail:
     def __init__(self, smtp_server="", sender="", password="", port=25):
@@ -109,7 +109,12 @@ class SMTPMail:
         else:
             self.SMTP = smtplib.SMTP
 
-    def send(self, subject, message, receiver, receivers=[], cc=[], bcc=[], filename=None):
+    def send(self, subject, message, receiver=None, receivers=None, cc=None, bcc=None, filename=None):
+        if receiver is None:
+            receiver = []
+        if receivers is None:
+            receivers = []
+
         if isinstance(receiver, str):
             receivers.append(receiver)
         elif isinstance(receiver, (list, tuple)):
@@ -118,10 +123,13 @@ class SMTPMail:
         msg["Subject"] = Header(subject, "utf-8")
         msg["From"] = Header(self.sender, "utf-8")
         msg["To"] = ";".join(receivers)
-        msg["Cc"] = ";".join(cc)
+        if cc:
+            msg["Cc"] = ";".join(cc)
+            receivers.extend(cc)
+        if bcc:
+            receivers.extend(bcc)
         msg["Message-ID"] = make_msgid()
-        receivers.extend(cc)
-        receivers.extend(bcc)
+
         msg.attach(MIMEText(message, "html", "utf-8"))
 
         if filename:
