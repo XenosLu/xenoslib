@@ -58,3 +58,6 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Send message
+        run: curl -X POST -H 'Content-type: application/json' --data '{"text":"xenoslib $(python3 setup.py --version) published"}' ${{ secrets.WEBHOOK }}
+ 
