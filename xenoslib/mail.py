@@ -84,14 +84,14 @@ class MailFetcher:
 
     def fetch_emails(self):
         """Login and fetch emails."""
-        logger.debug(f"Fetching emails from the past {self.days} day(s)...")
-        date_str = datetime.datetime.today() - datetime.timedelta(days=self.days)
+        from_date = datetime.datetime.today() - datetime.timedelta(days=self.days)
+        logger.debug(f"Fetching emails since {from_date:%Y-%m-%d %H:%M:%S} ({self.days} days ago)")
         for i in range(3):
             try:
                 with IMAPClient(self.imap_server, timeout=30) as client:
                     client.login(self.mail_addr, self.mail_pwd)
                     client.select_folder("INBOX", readonly=True)
-                    messages = client.search(["SINCE", date_str])
+                    messages = client.search(["SINCE", from_date])
                     emails = client.fetch(messages, ["INTERNALDATE", "BODY.PEEK[]"])
                     return emails
             except Exception as exc:
