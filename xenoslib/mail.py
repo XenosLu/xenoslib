@@ -98,6 +98,7 @@ class MailFetcher:
                 logger.warning(exc)
         raise Exception("Reached maximum retry attempts. Giving up connection.")
 
+
 class SMTPMail:
     def __init__(self, smtp_server="", sender="", password="", port=25):
         self.smtp_server = smtp_server
@@ -109,7 +110,9 @@ class SMTPMail:
         else:
             self.SMTP = smtplib.SMTP
 
-    def send(self, subject, message, receiver=None, receivers=None, cc=None, bcc=None, filename=None):
+    def send(
+        self, subject, message, receiver=None, receivers=None, cc=None, bcc=None, filename=None
+    ):
         if receiver is None:
             receiver = []
         if receivers is None:
