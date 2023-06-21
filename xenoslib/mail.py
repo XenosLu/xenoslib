@@ -72,7 +72,6 @@ class MailFetcher:
                 continue
             body = email.message_from_bytes(msg[b"BODY[]"])
             subject = str(email.header.make_header(email.header.decode_header(body["Subject"])))
-
             payload = body.get_payload(decode=True)
             if payload:
                 payload = payload.decode()
