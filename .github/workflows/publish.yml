@@ -15,7 +15,7 @@ on:
   workflow_call:
     secrets:
       WEBHOOK:
-      
+        required: true
       PYPI_API_TOKEN:
         required: true
 
