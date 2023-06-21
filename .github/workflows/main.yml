@@ -27,3 +27,4 @@ jobs:
     uses: XenosLu/xenoslib/.github/workflows/publish.yml@master
     secrets:
       PYPI_API_TOKEN : ${{ secrets.PYPI_API_TOKEN  }}
+      WEBHOOK : ${{ secrets.WEBHOOK  }}
