@@ -76,6 +76,7 @@ class MailFetcher:
             payload = body.get_payload(decode=True)
             if payload:
                 payload = payload.decode()
+            body["raw"] = msg[b"BODY[]"]
             body["subjectx"] = subject
             body["payload"] = payload
             body["internal_date"] = msg[b"INTERNALDATE"]
