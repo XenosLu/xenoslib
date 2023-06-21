@@ -86,7 +86,7 @@ class MailFetcher:
         """Login and fetch emails."""
         from_date = datetime.datetime.today() - datetime.timedelta(days=self.days)
         logger.debug(f"Fetching emails since {from_date:%Y-%m-%d %H:%M:%S} ({self.days} days ago)")
-        for i in range(3):
+        for i in range(5):
             try:
                 with IMAPClient(self.imap_server, timeout=30) as client:
                     client.login(self.mail_addr, self.mail_pwd)
@@ -96,6 +96,7 @@ class MailFetcher:
                     return emails
             except Exception as exc:
                 logger.warning(exc)
+                sleep(30)
         raise Exception("Reached maximum retry attempts. Giving up connection.")
 
 
