@@ -237,6 +237,8 @@ class SysTrayIcon:
         nid = (self.hwnd, 0)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, nid)
         win32gui.PostQuitMessage(0)  # Terminate the app.
+        sys.exit()
+        return True
 
     def on_notify_icon(self, hwnd, msg, wparam, lparam):
         """callback on catch tray icon events"""
