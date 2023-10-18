@@ -30,18 +30,28 @@ class RunAsAdmin:
         else:
             self.run_as_admin()
         print("Need administrator privilege, trying run as admin...")
+        # self.show_cmd_line()
+
+    @staticmethod
+    def show_cmd_line():
+        print(sys.executable, " ".join(sys.argv))
+        line = f'"{sys.executable}" "{os.path.abspath(sys.argv[0])}"'
+        print(line)
+        return line
 
     @staticmethod
     def run_as_admin():
+        args = [os.path.abspath(sys.argv[0]), *sys.argv[1:]]
+        args_with_quotes = " ".join([f'"{arg}"' if " " in arg else arg for arg in args])
         ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", sys.executable, " ".join(sys.argv), None, 1
+            None, "runas", sys.executable, args_with_quotes, None, 1
         )
 
     @staticmethod
     def run_as_admin_in_cmd():
-        arg_line = (
-            f'/k start "{sys.executable}" "{os.path.abspath(sys.argv[0])}" {" ".join(sys.argv[1:])}'
-        )
+        args = [sys.executable, os.path.abspath(sys.argv[0]), *sys.argv[1:]]
+        args_with_quotes = " ".join([f'"{arg}"' if " " in arg else arg for arg in args])
+        arg_line = f'/k "{args_with_quotes}"'
         ctypes.windll.shell32.ShellExecuteW(None, "runas", "cmd", arg_line, None, 1)
 
 
@@ -128,9 +138,9 @@ def add_windows_path_env(new_path):
 
 def test():
     """test only"""
-    add_windows_path_env("c:\\abc")
+    add_windows_path_env("c:\\abcdx")
     pause()
 
 
 if __name__ == "__main__":
-    RunAsAdmin(test, cmd=True)
+    RunAsAdmin(test, cmd=False)
