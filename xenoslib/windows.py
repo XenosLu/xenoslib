@@ -46,6 +46,7 @@ class RunAsAdmin:
 
 
 def pause():
+    """pause"""
     print("Press any key to continue...")
     msvcrt.getch()
     while msvcrt.kbhit():
@@ -126,6 +127,7 @@ def add_windows_path_env(new_path):
 
 
 def test():
+    """test only"""
     add_windows_path_env("c:\\abc")
     pause()
 
