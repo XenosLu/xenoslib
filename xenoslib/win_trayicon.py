@@ -83,9 +83,19 @@ class MenuItemConsole(MenuItem):
         super().__init__(*args, **kwargs)
         self.hconsole = win32console.GetConsoleWindow()
 
+    def is_window_visible_not_minimized(self):
+        """返回窗口是否可见且不处于最小化状态"""
+        # 判断窗口是否可见
+        visible = win32gui.IsWindowVisible(self.hconsole)
+        # 判断窗口是否最小化
+        minimized = win32gui.IsIconic(self.hconsole)
+        return visible and not minimized
+
     def action(self, show=None):
         if show is None:
-            super().action()
+            # super().action()'
+            self.checked = not self.is_window_visible_not_minimized()
+            # logger.info(self.checked)
         else:
             self.checked = show
         win32gui.ShowWindow(self.hconsole, self.checked)
@@ -111,6 +121,7 @@ class SysTrayIcon:
         if not iconpath:
             python_path = os.path.dirname(os.path.abspath(sys.executable))
             iconpath = os.path.join(python_path, "DLLs", "pyd.ico")
+            logger.debug(iconpath)
         if os.path.isfile(iconpath):
             hinst = win32gui.GetModuleHandle(None)
             icon_flags = win32con.LR_LOADFROMFILE | win32con.LR_DEFAULTSIZE
@@ -174,6 +185,11 @@ class SysTrayIcon:
         pos = win32gui.GetCursorPos()
         # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winui/menus_0hdi.asp
         try:
+            # 获取窗口当前状态
+            placement = win32gui.GetWindowPlacement(self.hwnd)
+            # 如果窗口当前是最小化状态，则还原窗口
+            if placement[1] == win32con.SW_SHOWMINIMIZED:
+                win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)
             win32gui.SetForegroundWindow(self.hwnd)
         except Exception as exc:
             logger.debug(exc, exc_info=True)
@@ -242,12 +258,11 @@ class SysTrayIcon:
     def on_notify_icon(self, hwnd, msg, wparam, lparam):
         """callback on catch tray icon events"""
         if lparam == win32con.WM_LBUTTONDBLCLK:
-            # self.execute_menu_option(self.FIRST_ID)
-            pass
+            self.execute_menu_option(self.FIRST_ID)
         elif lparam == win32con.WM_RBUTTONUP:
             self.draw_notify_icon()
             self.show_menu()
-        elif lparam == win32con.WM_LBUTTONUP:
+        elif lparam == win32con.WM_LBUTTONDOWN:
             self.draw_notify_icon()
             if callable(self.left_click_action):
                 self.left_click_action()
