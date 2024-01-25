@@ -89,6 +89,7 @@ class MenuItemConsole(MenuItem):
         visible = win32gui.IsWindowVisible(self.hconsole)
         # 判断窗口是否最小化
         minimized = win32gui.IsIconic(self.hconsole)
+        logger.debug(f"window visible: {visible}, window minimized: {minimized}")
         return visible and not minimized
 
     def action(self, show=None):
@@ -101,7 +102,9 @@ class MenuItemConsole(MenuItem):
         win32gui.ShowWindow(self.hconsole, self.checked)
         if self.checked:
             try:
+                # win32gui.BringWindowToTop(self.hconsole)
                 win32gui.SetForegroundWindow(self.hconsole)
+                # ctypes.windll.user32.SetForegroundWindow(self.hconsole)
             except Exception as exc:
                 logger.debug(exc, exc_info=True)
 
