@@ -121,7 +121,7 @@ class SysTrayIcon:
         if not iconpath:
             python_path = os.path.dirname(os.path.abspath(sys.executable))
             iconpath = os.path.join(python_path, "DLLs", "pyd.ico")
-            logger.debug(iconpath)
+            logger.debug(f"Load icon from path: {iconpath}")
         if os.path.isfile(iconpath):
             hinst = win32gui.GetModuleHandle(None)
             icon_flags = win32con.LR_LOADFROMFILE | win32con.LR_DEFAULTSIZE
