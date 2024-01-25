@@ -92,7 +92,7 @@ class MenuItemConsole(MenuItem):
 
     def action(self, show=None):
         if show is None:
-            # super().action()'
+            # super().action()
             self.checked = not self.is_window_visible_not_minimized()
             # logger.info(self.checked)
         else:
