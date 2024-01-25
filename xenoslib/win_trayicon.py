@@ -85,9 +85,7 @@ class MenuItemConsole(MenuItem):
 
     def is_window_visible_not_minimized(self):
         """返回窗口是否可见且不处于最小化状态"""
-        # 判断窗口是否可见
         visible = win32gui.IsWindowVisible(self.hconsole)
-        # 判断窗口是否最小化
         minimized = win32gui.IsIconic(self.hconsole)
         logger.debug(f"window visible: {visible}, window minimized: {minimized}")
         return visible and not minimized
