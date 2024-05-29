@@ -7,4 +7,6 @@ if sys.platform == "win32":
     from .win_trayicon import *  # noqa
 elif sys.platform == "linux":
     from .linux import *  # noqa
+elif sys.platform == "darwin":
+    from .linux import *  # noqa
 from .base import *  # noqa
