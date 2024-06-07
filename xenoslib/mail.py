@@ -161,6 +161,7 @@ def test_imap():
         imap_server, mail_addr, mail_pwd, interval=1, days=1, skip_current=False
     ):
         print(email_data["subject"])
+        print(email_data["subjectx"])
 
 
 def test():
