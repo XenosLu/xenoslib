@@ -158,7 +158,7 @@ def test_imap():
     mail_addr = os.environ["IMAP_ADDR"]
     mail_pwd = os.environ["IMAP_PASS"]
     for email_data in MailFetcher(
-        imap_server, mail_addr, mail_pwd, interval=1, days=30, skip_current=True
+        imap_server, mail_addr, mail_pwd, interval=1, days=1, skip_current=False
     ):
         print(email_data["subject"])
 
