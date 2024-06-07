@@ -180,5 +180,5 @@ def test():
 
 
 if __name__ == "__main__":
-    # test_imap()
-    test()
+    test_imap()
+    # ~ test()
