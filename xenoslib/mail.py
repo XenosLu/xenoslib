@@ -74,7 +74,10 @@ class MailFetcher:
             subject = str(email.header.make_header(email.header.decode_header(body["Subject"])))
             payload = body.get_payload(decode=True)
             if payload:
-                payload = payload.decode()
+                try:
+                    payload = payload.decode()
+                except UnicodeDecodeError:
+                    payload = payload.decode("latin1")  # failover decode
             body["raw"] = msg[b"BODY[]"]
             body["subjectx"] = subject
             body["payload"] = payload
