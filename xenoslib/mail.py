@@ -72,8 +72,13 @@ class MailFetcher:
                 continue
             body = email.message_from_bytes(msg[b"BODY[]"])
             subject = str(email.header.make_header(email.header.decode_header(body["Subject"])))
-            payload = body.get_payload(decode=True)
-            if payload:
+            if body.is_multipart():
+                for part in body.walk():
+                    if "text/plain" in part.get_content_type():
+                        payload = part.get_payload(decode=True)
+            else:
+                payload = body.get_payload(decode=True)
+            if isinstance(payload, bytes):
                 try:
                     payload = payload.decode()
                 except UnicodeDecodeError:
@@ -163,8 +168,10 @@ def test_imap():
     for email_data in MailFetcher(
         imap_server, mail_addr, mail_pwd, interval=1, days=1, skip_current=False
     ):
-        print(email_data["subject"])
+        # ~ print(email_data["subject"])
         print(email_data["subjectx"])
+        print(email_data["payload"])
+        # ~ print(email_data.keys())
 
 
 def test():
