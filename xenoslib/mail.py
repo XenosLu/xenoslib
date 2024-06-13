@@ -72,6 +72,7 @@ class MailFetcher:
                 continue
             body = email.message_from_bytes(msg[b"BODY[]"])
             subject = str(email.header.make_header(email.header.decode_header(body["Subject"])))
+            payload = None
             if body.is_multipart():
                 for part in body.walk():
                     if "text/plain" in part.get_content_type():
