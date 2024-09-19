@@ -75,7 +75,7 @@ class MailFetcher:
             payload = body.get_payload(decode=True)
             if body.is_multipart():
                 for part in body.walk():
-                    if "text/plain" in part.get_content_type():
+                    if "text/html" in part.get_content_type():
                         payload = part.get_payload(decode=True)
             if isinstance(payload, bytes):
                 try:
