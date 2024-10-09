@@ -127,24 +127,19 @@ class SMTPMail:
             receivers.append(receiver)
         elif isinstance(receiver, (list, tuple)):
             receivers.extend(receiver)
-        msg = MIMEMultipart()
-        msg["Subject"] = Header(subject, "utf-8")
-        msg["From"] = Header(self.sender, "utf-8")
-        msg["To"] = ";".join(receivers)
+        msg = self.construct_msg(
+            subject=subject,
+            message=message,
+            receivers=receivers,
+            cc=cc,
+            filename=filename,
+        )
         if cc:
             msg["Cc"] = ";".join(cc)
             receivers.extend(cc)
         if bcc:
             receivers.extend(bcc)
-        msg["Message-ID"] = make_msgid()
-        msg.attach(MIMEText(message, "html", "utf-8"))
-        if filename:
-            attachment = MIMEApplication(open(filename, "rb").read())
-            attachment.add_header("Content-Disposition", "attachment", filename=filename)
-            msg.attach(attachment)
-
         with self.SMTP(self.smtp_server, self.port) as smtp:
-            print(smtp.has_extn("STARTTLS"))
             if smtp.has_extn("STARTTLS"):
                 smtp.starttls()
             try:
@@ -154,6 +149,19 @@ class SMTPMail:
                 return False
             smtp.sendmail(self.sender, receivers, msg.as_string())
             return True
+
+    def construct_msg(self, subject, message, receivers=None, cc=None, filename=None):
+        msg = MIMEMultipart()
+        msg["Subject"] = Header(subject, "utf-8")
+        msg["From"] = Header(self.sender, "utf-8")
+        msg["To"] = ";".join(receivers)
+        msg["Message-ID"] = make_msgid()
+        msg.attach(MIMEText(message, "html", "utf-8"))
+        if filename:
+            attachment = MIMEApplication(open(filename, "rb").read())
+            attachment.add_header("Content-Disposition", "attachment", filename=filename)
+            msg.attach(attachment)
+        return msg
 
 
 def test_imap():
@@ -173,7 +181,7 @@ def test_imap():
         # ~ print(email_data.keys())
 
 
-def test():
+def test_smtp():
     try:
         import env  # noqa
     except ModuleNotFoundError:
@@ -185,9 +193,12 @@ def test():
     message = '<span style="color:red">This is a test email.</span>'
     email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=465)
     # email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=587)
-    email_sender.send(subject=subject, message=message, receiver=os.environ["RECEIVER"])
+    # ~ email_sender.send(subject=subject, message=message, receiver=os.environ["RECEIVER"],bcc=["haiwe.lu@sap.com"])
+    email_sender.send(
+        subject=subject, message=message, receiver="luhw@cndatacom.com", bcc=["haiwei.lu@sap.com"]
+    )
 
 
 if __name__ == "__main__":
-    test_imap()
-    # ~ test()
+    # ~ test_imap()
+    test_smtp()
