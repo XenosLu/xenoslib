@@ -40,14 +40,22 @@ class MailFetcher:
     """
 
     def __new__(
-        cls, imap_server, mail_addr, mail_pwd, interval=30, days=1, timeout=30, skip_current=True, endless=True
+        cls,
+        imap_server,
+        mail_addr,
+        mail_pwd,
+        interval=30,
+        days=1,
+        timeout=30,
+        skip_current=True,
+        endless=True,
     ):
         self = super().__new__(cls)
         self.imap_server = imap_server
         self.mail_addr = mail_addr
         self.mail_pwd = mail_pwd
         self.days = days
-        self.timeout=timeout
+        self.timeout = timeout
 
         self.msg_ids = deque(maxlen=999)
         if not endless:
@@ -105,7 +113,9 @@ class MailFetcher:
             except Exception as exc:
                 logger.warning(exc)
                 sleep(30)
-        raise Exception("Reached maximum retry attempts when connect IMAP server. Giving up connection.")
+        raise Exception(
+            "Reached maximum retry attempts when connect IMAP server. Giving up connection."
+        )
 
 
 class SMTPMail:
