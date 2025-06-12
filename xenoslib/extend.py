@@ -213,12 +213,12 @@ class ConfigLoader(SingletonWithArgs):
         >>> config = ConfigLoader("config.yml", vault_secret_id="my-secret-id")
     """
 
+    cache = {}
+
     def __init__(self, config_file_path="config.yml", vault_secret_id=None):
         """Initialize the ConfigLoader with a configuration file and optional Vault secret."""
         with open(config_file_path, "r") as f:
             self._raw_config = yaml.safe_load(f) or {}
-
-        self.cache = {}
         self.vault_client = None
 
         if vault_secret_id is not None:
@@ -291,9 +291,9 @@ class ConfigLoader(SingletonWithArgs):
                 )
 
             cache_key = f"{section}_{key_name}"
+
             if use_cache and cache_key in self.cache:
                 return self.cache[cache_key]
-
             value = self._get_value_from_vault(section, key_name)
             self.cache[cache_key] = value
             return value
