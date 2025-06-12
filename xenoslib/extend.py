@@ -7,6 +7,8 @@ import logging
 import yaml
 import requests
 
+from xenoslib.base import SingletonWithArgs
+
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +194,7 @@ class DingTalkLogHandler(logging.Handler):
             print(exc)
 
 
-class ConfigLoader:
+class ConfigLoader(SingletonWithArgs):
     """Centralized configuration management with optional Vault integration.
 
     Args:
