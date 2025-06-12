@@ -244,7 +244,9 @@ class Singleton:
 
 
 class SingletonWithArgs:
-    """带参数的单例模式, 通过继承使用，需放到第一继承位"""
+    """带参数的单例模式, 通过继承使用，需放到第一继承位
+    Please note that __init__() will still run every time
+    """
 
     def __new__(cls, *args, **kwargs):
         arg = f"{args}{kwargs}"
