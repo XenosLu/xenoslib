@@ -214,14 +214,14 @@ class ConfigLoader(SingletonWithArgs):
     """
 
     cache = {}
+    vault_client = None
 
     def __init__(self, config_file_path="config.yml", vault_secret_id=None):
         """Initialize the ConfigLoader with a configuration file and optional Vault secret."""
         with open(config_file_path, "r") as f:
             self._raw_config = yaml.safe_load(f) or {}
-        self.vault_client = None
 
-        if vault_secret_id is not None:
+        if not self.vault_client and vault_secret_id is not None:
             self._init_vault_client(vault_secret_id)
 
     def _init_vault_client(self, vault_secret_id):
