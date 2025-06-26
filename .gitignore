@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 xenoslib/env.py
 .DS_Store
+xenoslib/config.yml

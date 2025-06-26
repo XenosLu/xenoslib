@@ -221,10 +221,11 @@ class ConfigLoader(SingletonWithArgs):
         with open(config_file_path, "r") as f:
             self._raw_config = yaml.safe_load(f) or {}
 
-        if not self.vault_client and vault_secret_id is not None:
-            self._init_vault_client(vault_secret_id)
+        if vault_secret_id is not None:
+            self.vault_secret_id = vault_secret_id
+            self._check_and_renew_vault_client()
 
-    def _init_vault_client(self, vault_secret_id):
+    def _init_vault_client(self):
         """Initialize and authenticate the Vault client (imports hvac on demand).
 
         Args:
@@ -252,10 +253,16 @@ class ConfigLoader(SingletonWithArgs):
                 raise KeyError("Missing required Vault configuration in config.yml")
 
             self.vault_client = hvac.Client(url=vault_url, namespace=vault_space)
-            self.vault_client.auth.approle.login(role_id=vault_role_id, secret_id=vault_secret_id)
+            self.vault_client.auth.approle.login(role_id=vault_role_id, secret_id=self.vault_secret_id)
         except Exception as e:
             self.vault_client = None
             raise Exception(f"Failed to initialize Vault client: {str(e)}")
+
+    def _check_and_renew_vault_client(self):
+        # 检查当前Token的状态，包括过期时间和可续租性
+        if not self.vault_client or not self.vault_client.is_authenticated():
+            # 如果当前Token无效，则重新认证
+            self._init_vault_client()
 
     def get(self, section, key_name, use_cache=True):
         """Retrieve a configuration value.
@@ -366,5 +373,5 @@ if __name__ == "__main__":
 
     # This will only work if you provide a valid Vault secret ID
     # and hvac package is installed
-    config_with_vault = ConfigLoader("config.yml", vault_secret_id="your-secret-id")
+    config_with_vault = ConfigLoader("config.yml", vault_secret_id=os.getenv("VAULT_CF_LANDSCAPES_SECRET_ID"))
     print("With Vault:", config_with_vault.get("cis", "cis_client_id"))
