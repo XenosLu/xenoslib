@@ -252,7 +252,8 @@ class ConfigLoader(SingletonWithArgs):
             if not all([vault_url, vault_space, vault_role_id]):
                 raise KeyError("Missing required Vault configuration in config.yml")
 
-            self.vault_client = hvac.Client(url=vault_url, namespace=vault_space)
+            self.vault_client = hvac.Client(url=vault_url, namespace=vault_space, timeout=45)
+            help(hvac.Client)
             self.vault_client.auth.approle.login(role_id=vault_role_id, secret_id=self.vault_secret_id)
         except Exception as e:
             self.vault_client = None
