@@ -253,7 +253,9 @@ class ConfigLoader(SingletonWithArgs):
                 raise KeyError("Missing required Vault configuration in config.yml")
 
             self.vault_client = hvac.Client(url=vault_url, namespace=vault_space, timeout=45)
-            self.vault_client.auth.approle.login(role_id=vault_role_id, secret_id=self.vault_secret_id)
+            self.vault_client.auth.approle.login(
+                role_id=vault_role_id, secret_id=self.vault_secret_id
+            )
         except Exception as e:
             self.vault_client = None
             raise Exception(f"Failed to initialize Vault client: {str(e)}")
@@ -323,6 +325,11 @@ class ConfigLoader(SingletonWithArgs):
         try:
             vault_path = self._raw_config[section]["vault_path"]
             vault_key = self._raw_config[section][f"{key_name}@vault"]
+            vault_namepsace = self._raw_config[section].get("vault_namespace")
+            if vault_namepsace:
+                self.vault_client.adapter.namespace = vault_namepsace
+            else:
+                self.vault_client.adapter.namespace = self._raw_config["vault"]["space"]
             data = self.vault_client.secrets.kv.read_secret_version(
                 path=vault_path, mount_point="kv", raise_on_deleted_version=True
             )
@@ -373,5 +380,7 @@ if __name__ == "__main__":
 
     # This will only work if you provide a valid Vault secret ID
     # and hvac package is installed
-    config_with_vault = ConfigLoader("config.yml", vault_secret_id=os.getenv("VAULT_CF_LANDSCAPES_SECRET_ID"))
-    print("With Vault:", config_with_vault.get("cis", "cis_client_id"))
+    config_with_vault = ConfigLoader("config.yml", vault_secret_id=os.getenv("VAULT_SECRET_ID"))
+
+    print("With Vault:", config_with_vault.test.test)
+    print("With Vault:", config_with_vault["cis"]["cis_client_id"])
