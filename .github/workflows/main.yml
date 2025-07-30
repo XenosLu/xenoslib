@@ -14,7 +14,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   lint:
     uses: XenosLu/xenoslib/.github/workflows/lint.yml@master
 
@@ -26,5 +25,20 @@ jobs:
     needs: tests
     uses: XenosLu/xenoslib/.github/workflows/publish.yml@master
     secrets:
-      PYPI_API_TOKEN : ${{ secrets.PYPI_API_TOKEN  }}
-      WEBHOOK : ${{ secrets.WEBHOOK  }}
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      WEBHOOK: ${{ secrets.WEBHOOK }}
+
+  # 新增失败通知作业
+  notify-failure:
+    needs: [lint, tests, publish]  # 依赖所有关键作业
+    if: failure()  # 任意一个依赖作业失败时触发
+    runs-on: ubuntu-latest
+    steps:
+      - name: use slack Webhook send notification
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "text": " "xenoslib $(python3 setup.py --version) failed.\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }' \
+            "${{ secrets.WEBHOOK }}"
