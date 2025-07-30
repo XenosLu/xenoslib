@@ -362,6 +362,13 @@ class SectionProxy:
         """Dictionary-style access to configuration values."""
         return self._loader.get(self._section, key)
 
+    def get(self, key, default=None):
+        """Dictionary-style access to configuration values."""
+        try:
+            return self._loader.get(self._section, key)
+        except KeyError:
+            return default
+
     def __getattr__(self, key):
         """Attribute-style access to configuration values."""
         try:
@@ -384,3 +391,4 @@ if __name__ == "__main__":
 
     print("With Vault:", config_with_vault.test.test)
     print("With Vault:", config_with_vault["cis"]["cis_client_id"])
+    print("Try val not exists: ", config_with_vault.test.get("not_exists"))
