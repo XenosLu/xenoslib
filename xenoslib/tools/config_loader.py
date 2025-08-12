@@ -28,17 +28,17 @@ class ConfigLoader(SingletonWithArgs):
 
         # With Vault (hvac imported on demand)
         >>> config = ConfigLoader("config.yml", vault_secret_id="my-secret-id")
-        
+
         # Write to Vault using attribute style
         >>> config.test_section.test_key = "new_value"
-        
+
         # Write to Vault using dictionary style
         >>> config["test_section"]["test_key"] = "new_value"
     """
 
     VAULT_SUFFIX = "@vault"
     KV_MOUNT_POINT = "kv"
-    
+
     cache = {}
     vault_client = None
 
@@ -47,7 +47,7 @@ class ConfigLoader(SingletonWithArgs):
         with open(config_file_path, "r") as f:
             config_data = yaml.safe_load(f)
             self._raw_config = config_data if isinstance(config_data, dict) else {}
-        
+
         if vault_secret_id is not None:
             self.vault_secret_id = vault_secret_id
             self._check_and_renew_vault_client()
@@ -115,17 +115,15 @@ class ConfigLoader(SingletonWithArgs):
         section_config = self._raw_config.get(section)
         if section_config is None:
             raise KeyError(f"Section '{section}' not found")
-            
+
         if not self._is_vault_reference(section_config, key_name):
             raise KeyError(f"Key '{key_name}' is not a Vault reference in section '{section}'")
-            
+
         if self.vault_client is None:
-            raise Exception(
-                f"Vault access required for {key_name} but Vault is not initialized"
-            )
-            
+            raise Exception(f"Vault access required for {key_name} but Vault is not initialized")
+
         self._set_value_to_vault(section, key_name, value)
-        
+
         cache_key = f"{section}:{key_name}"
         if use_cache:
             self.cache[cache_key] = value
@@ -140,10 +138,10 @@ class ConfigLoader(SingletonWithArgs):
 
             vault_key_ref = f"{key_name}{self.VAULT_SUFFIX}"
             vault_key = section_config[vault_key_ref]
-            
+
             namespace = section_config.get("vault_namespace") or self._raw_config["vault"]["space"]
             self.vault_client.adapter.namespace = namespace
-            
+
             data = self.vault_client.secrets.kv.read_secret_version(
                 path=vault_path, mount_point=self.KV_MOUNT_POINT, raise_on_deleted_version=True
             )
@@ -155,18 +153,18 @@ class ConfigLoader(SingletonWithArgs):
         """Set a secret value to Vault."""
         try:
             self._check_and_renew_vault_client()
-            
+
             section_config = self._raw_config[section]
             vault_path = section_config.get("vault_path")
             if not vault_path:
                 raise KeyError(f"Missing vault_path in section '{section}'")
-                
+
             vault_key_ref = f"{key_name}{self.VAULT_SUFFIX}"
             vault_key = section_config[vault_key_ref]
-            
+
             namespace = section_config.get("vault_namespace") or self._raw_config["vault"]["space"]
             self.vault_client.adapter.namespace = namespace
-            
+
             try:
                 data = self.vault_client.secrets.kv.read_secret_version(
                     path=vault_path, mount_point=self.KV_MOUNT_POINT, raise_on_deleted_version=True
@@ -175,15 +173,13 @@ class ConfigLoader(SingletonWithArgs):
             except Exception:
                 logger.warning(f"Secret not found, creating new secret at {vault_path}")
                 secret_data = {}
-                
+
             secret_data[vault_key] = value
-            
+
             self.vault_client.secrets.kv.create_or_update_secret(
-                path=vault_path,
-                secret=secret_data,
-                mount_point=self.KV_MOUNT_POINT
+                path=vault_path, secret=secret_data, mount_point=self.KV_MOUNT_POINT
             )
-            
+
             logger.info(f"Updated Vault secret: {vault_path}/{vault_key}")
         except Exception as e:
             raise Exception(f"Failed to set {key_name} to Vault: {str(e)}") from e
@@ -216,7 +212,7 @@ class SectionProxy:
     def __getitem__(self, key):
         """Dictionary-style access to configuration values."""
         return self._loader.get(self._section, key)
-        
+
     def __setitem__(self, key, value):
         """Dictionary-style setting of configuration values to Vault."""
         self.set(key, value)
@@ -227,7 +223,7 @@ class SectionProxy:
             return self._loader.get(self._section, key)
         except KeyError:
             return default
-            
+
     def set(self, key, value):
         """Set a configuration value to Vault."""
         self._loader.set(self._section, key, value)
@@ -238,10 +234,10 @@ class SectionProxy:
             return self[key]
         except KeyError as e:
             raise AttributeError(str(e))
-            
+
     def __setattr__(self, name, value):
         """Attribute-style setting of configuration values to Vault."""
-        if name.startswith('_'):
+        if name.startswith("_"):
             super().__setattr__(name, value)
         else:
             self.set(name, value)
@@ -259,13 +255,13 @@ if __name__ == "__main__":
 
     # 属性方式读取
     print("With Vault (attr):", config_with_vault.test.test)
-    
+
     # 字典方式读取
     print("With Vault (dict):", config_with_vault["cis"]["cis_client_id"])
-    
+
     # 测试不存在的值
     print("Try val not exists: ", config_with_vault.test.get("not_exists"))
-    
+
     # 写入示例 - 属性方式
     try:
         print("Current test value (attr read):", config_with_vault.test.test)
@@ -273,18 +269,18 @@ if __name__ == "__main__":
         print("After write (attr read):", config_with_vault.test.test)
     except Exception as e:
         print("Attribute write failed:", str(e))
-    
+
     # 写入示例 - 字典方式
     try:
         print("Current test value (dict read):", config_with_vault["test"]["test"])
         config_with_vault["test"]["test"] = "new_value_456"
         print("After write (dict read):", config_with_vault["test"]["test"])
-        
+
         # 混合方式验证
         print("After write (attr read):", config_with_vault.test.test)
     except Exception as e:
         print("Dictionary write failed:", str(e))
-    
+
     # 写入新键示例
     try:
         print("Setting new key...")
