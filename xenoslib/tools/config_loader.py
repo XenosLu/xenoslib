@@ -30,14 +30,20 @@ class ConfigLoader(SingletonWithArgs):
         >>> config = ConfigLoader("config.yml", vault_secret_id="my-secret-id")
     """
 
+    # 常量定义优化
+    VAULT_SUFFIX = "@vault"
+    KV_MOUNT_POINT = "kv"
+    
     cache = {}
     vault_client = None
 
     def __init__(self, config_file_path="config.yml", vault_secret_id=None):
         """Initialize the ConfigLoader with a configuration file and optional Vault secret."""
         with open(config_file_path, "r") as f:
-            self._raw_config = yaml.safe_load(f) or {}
-
+            # 增强空文件处理
+            config_data = yaml.safe_load(f)
+            self._raw_config = config_data if isinstance(config_data, dict) else {}
+        
         if vault_secret_id is not None:
             self.vault_secret_id = vault_secret_id
             self._check_and_renew_vault_client()
@@ -75,13 +81,18 @@ class ConfigLoader(SingletonWithArgs):
             )
         except Exception as e:
             self.vault_client = None
-            raise Exception(f"Failed to initialize Vault client: {str(e)}")
+            # 完善异常链
+            raise Exception(f"Failed to initialize Vault client: {str(e)}") from e
 
     def _check_and_renew_vault_client(self):
         # 检查当前Token的状态，包括过期时间和可续租性
         if not self.vault_client or not self.vault_client.is_authenticated():
             # 如果当前Token无效，则重新认证
             self._init_vault_client()
+
+    def _is_vault_reference(self, section_config, key_name):
+        """检查键是否是Vault引用"""
+        return f"{key_name}{self.VAULT_SUFFIX}" in section_config
 
     def get(self, section, key_name, use_cache=True):
         """Retrieve a configuration value.
@@ -110,14 +121,14 @@ class ConfigLoader(SingletonWithArgs):
             return section_config[key_name]
 
         # Handle Vault reference if Vault is enabled
-        vault_key = f"{key_name}@vault"
-        if vault_key in section_config:
+        if self._is_vault_reference(section_config, key_name):
             if self.vault_client is None:
                 raise Exception(
                     f"Vault access required for {key_name} but Vault is not initialized"
                 )
 
-            cache_key = f"{section}_{key_name}"
+            # 使用标准分隔符的缓存键
+            cache_key = f"{section}:{key_name}"
 
             if use_cache and cache_key in self.cache:
                 return self.cache[cache_key]
@@ -125,7 +136,7 @@ class ConfigLoader(SingletonWithArgs):
             self.cache[cache_key] = value
             return value
 
-        raise KeyError(f"Key '{key_name}' or '{vault_key}' not found in section '{section}'")
+        raise KeyError(f"Key '{key_name}' not found in section '{section}'")
 
     def _get_value_from_vault(self, section, key_name):
         """Retrieve a secret value from Vault.
@@ -146,18 +157,20 @@ class ConfigLoader(SingletonWithArgs):
             if not vault_path:
                 raise KeyError(f"Missing vault_path in section '{section}'")
 
-            vault_key = section_config[f"{key_name}@vault"]
-            vault_namespace = section_config.get("vault_namespace")
-            if vault_namespace:
-                self.vault_client.adapter.namespace = vault_namespace
-            else:
-                self.vault_client.adapter.namespace = self._raw_config["vault"]["space"]
+            vault_key_ref = f"{key_name}{self.VAULT_SUFFIX}"
+            vault_key = section_config[vault_key_ref]
+            
+            # 简化命名空间处理逻辑
+            namespace = section_config.get("vault_namespace") or self._raw_config["vault"]["space"]
+            self.vault_client.adapter.namespace = namespace
+            
             data = self.vault_client.secrets.kv.read_secret_version(
-                path=vault_path, mount_point="kv", raise_on_deleted_version=True
+                path=vault_path, mount_point=self.KV_MOUNT_POINT, raise_on_deleted_version=True
             )
             return data["data"]["data"][vault_key]
         except Exception as e:
-            raise Exception(f"Failed to fetch {key_name} from Vault: {str(e)}")
+            # 完善异常链
+            raise Exception(f"Failed to fetch {key_name} from Vault: {str(e)}") from e
 
     def __getitem__(self, section):
         """Dictionary-style access to configuration sections."""
