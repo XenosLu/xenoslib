@@ -57,7 +57,7 @@ class ConfigLoader(SingletonWithArgs):
             import hvac  # Lazy import
         except ImportError as e:
             raise ImportError(
-                "hvac package is required for Vault integration. " "Install with: pip install hvac"
+                "hvac package is required for Vault integration. Install with: pip install hvac"
             ) from e
 
         try:
@@ -101,16 +101,17 @@ class ConfigLoader(SingletonWithArgs):
             KeyError: If the section or key is not found.
             Exception: If Vault access is required but not available.
         """
-        if section not in self._raw_config:
+        section_config = self._raw_config.get(section)
+        if section_config is None:
             raise KeyError(f"Section '{section}' not found")
 
         # Check for direct value first
-        if key_name in self._raw_config[section]:
-            return self._raw_config[section][key_name]
+        if key_name in section_config:
+            return section_config[key_name]
 
         # Handle Vault reference if Vault is enabled
         vault_key = f"{key_name}@vault"
-        if vault_key in self._raw_config[section]:
+        if vault_key in section_config:
             if self.vault_client is None:
                 raise Exception(
                     f"Vault access required for {key_name} but Vault is not initialized"
@@ -140,11 +141,15 @@ class ConfigLoader(SingletonWithArgs):
             Exception: If Vault access fails.
         """
         try:
-            vault_path = self._raw_config[section]["vault_path"]
-            vault_key = self._raw_config[section][f"{key_name}@vault"]
-            vault_namepsace = self._raw_config[section].get("vault_namespace")
-            if vault_namepsace:
-                self.vault_client.adapter.namespace = vault_namepsace
+            section_config = self._raw_config[section]
+            vault_path = section_config.get("vault_path")
+            if not vault_path:
+                raise KeyError(f"Missing vault_path in section '{section}'")
+
+            vault_key = section_config[f"{key_name}@vault"]
+            vault_namespace = section_config.get("vault_namespace")
+            if vault_namespace:
+                self.vault_client.adapter.namespace = vault_namespace
             else:
                 self.vault_client.adapter.namespace = self._raw_config["vault"]["space"]
             data = self.vault_client.secrets.kv.read_secret_version(
