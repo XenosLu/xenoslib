@@ -12,7 +12,6 @@ from logging.handlers import TimedRotatingFileHandler
 
 def init_logger(
     use_file: bool = True,
-    level: int = logging.INFO,
     backup_count: int = 0,  # New parameter: number of log files to retain (0 means keep all)
 ) -> logging.Logger:
     """
@@ -20,40 +19,27 @@ def init_logger(
 
     Args:
         use_file: Whether to enable file logging
-        level: Logging level (DEBUG/INFO/WARN/ERROR)
         backup_count: Number of historical log files to retain (default 0=keep all)
     """
-    # 1. Dynamically get caller's filename
-    caller_frame = inspect.stack()[1]
-    caller_path = caller_frame.filename
-    caller_name = os.path.splitext(os.path.basename(caller_path))[0]
-
-    # 2. Configure log directory and filename
-    log_dir = "logs"
-    os.makedirs(log_dir, exist_ok=True)
-    log_filename = f"{caller_name}.log"
-    full_path = os.path.join(log_dir, log_filename)
-
-    # 3. Avoid duplicate initialization
-    logger = logging.getLogger(caller_name)
-    if logger.hasHandlers():
-        return logger
-
-    logger.setLevel(level)
     formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d - %(message)s",
+        "%(asctime)s %(filename)s %(levelname)s [line:%(lineno)d] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-
-    # 4. Console handler (required)
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     handlers = [console_handler]
 
-    # 5. File handler (daily rotation + file retention policy)
+    # File handler (daily rotation + file retention policy)
     if use_file:
+        # Dynamically get caller's filename
+        caller_frame = inspect.stack()[1]
+        caller_path = caller_frame.filename
+        caller_name = os.path.splitext(caller_path)[0]
+        # Configure log directory and filename
+        log_filename = f"{caller_name}.log"
+
         file_handler = TimedRotatingFileHandler(
-            full_path,
+            log_filename,
             when="midnight",  # Rotate daily
             interval=1,
             backupCount=backup_count,  # Key parameter: controls number of retained files
@@ -62,10 +48,7 @@ def init_logger(
         file_handler.setFormatter(formatter)
         handlers.append(file_handler)
 
-    for handler in handlers:
-        logger.addHandler(handler)
-
-    return logger
+    logging.basicConfig(level=logging.INFO, handlers=handlers)
 
 
 def sleep(seconds, mute=False):
@@ -414,12 +397,6 @@ def get_attr_val(obj, *args):
 
 
 if __name__ == "__main__":
-    data = {"a": 1, "b": {"c": 2, "d": [3, 4, {"e": 5}]}, "f": (6, 7, {"g": 8})}
-    n = NestedData(data)
 
-    from pprint import pprint
-
-    pprint(list(n.search("b")))
-    # pprint(list(n.search(1)))
-    # n.show_result()
-    # pprint(list(n.find(lambda k, v: "i" in v, ignore_exc=True)))
+    init_logger()
+    logging.info("test")
