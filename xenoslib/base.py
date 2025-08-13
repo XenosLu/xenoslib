@@ -11,7 +11,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 
 def init_logger(
-    use_file: bool = True,
+    use_file: bool = False,
     backup_count: int = 0,  # New parameter: number of log files to retain (0 means keep all)
 ) -> logging.Logger:
     """
