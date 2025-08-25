@@ -10,3 +10,4 @@ elif sys.platform == "linux":
 elif sys.platform == "darwin":
     from .linux import *  # noqa
 from .base import *  # noqa
+from .time_utils import * # noqa
