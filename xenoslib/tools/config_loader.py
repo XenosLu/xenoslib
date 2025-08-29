@@ -244,7 +244,13 @@ class SectionProxy:
 
     def __repr__(self):
         """String representation of the section's configuration."""
-        return yaml.dump(self._loader._raw_config[self._section])
+        return yaml.dump(self.to_dict())
+
+    def __contains__(self, key):
+        return key in self.self.to_dict()
+
+    def to_dict(self):
+        return self._loader._raw_config[self._section]
 
 
 if __name__ == "__main__":
