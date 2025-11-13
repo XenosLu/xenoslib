@@ -302,6 +302,7 @@ class SingletonWithArgs:
 
 class ArgMethodBase:
     """auto generator arguments by static methods"""
+    result = True
 
     def __init__(self, epilog=None):
         """initialize arguments parser"""
@@ -324,7 +325,7 @@ class ArgMethodBase:
         elif self.__run_command__(**vars(args)) is False:
             print(color("ERROR", "RED"), file=sys.stderr)
             exit(-1)
-        else:
+        elif self.result:
             print(color("OK", "GREEN"), file=sys.stderr)
 
     def __run_command__(self, command, **args):
