@@ -12,6 +12,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 def init_logger(
     use_file: bool = False,
+    level=logging.INFO,
     backup_count: int = 0,  # New parameter: number of log files to retain (0 means keep all)
 ) -> logging.Logger:
     """
@@ -48,7 +49,7 @@ def init_logger(
         file_handler.setFormatter(formatter)
         handlers.append(file_handler)
 
-    logging.basicConfig(level=logging.INFO, handlers=handlers)
+    logging.basicConfig(level=level, handlers=handlers)
 
 
 def sleep(seconds, mute=False):
