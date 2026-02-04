@@ -107,7 +107,7 @@ class MailFetcher:
                 with IMAPClient(self.imap_server, timeout=self.timeout) as client:
                     client.login(self.mail_addr, self.mail_pwd)
                     client.select_folder("INBOX", readonly=True)
-                    messages = client.search(["SINCE", from_date])
+                    messages = client.search(["UID", "1:*", "SINCE", from_date])
                     emails = client.fetch(messages, ["INTERNALDATE", "BODY.PEEK[]"])
                     return emails
             except Exception as exc:
