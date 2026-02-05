@@ -153,11 +153,7 @@ class SMTPMail:
         with self.SMTP(self.smtp_server, self.port) as smtp:
             if smtp.has_extn("STARTTLS"):
                 smtp.starttls()
-            try:
-                smtp.login(self.sender, self.password)
-            except Exception as exc:
-                logger.warning(exc)
-                return False
+            smtp.login(self.sender, self.password)
             smtp.sendmail(self.sender, receivers, msg.as_string())
             return True
 
@@ -202,12 +198,13 @@ def test_smtp():
     smtp_server = os.environ["SMTP_SERVER"]
     subject = "Test Email2"
     message = '<span style="color:red">This is a test email.</span>'
-    email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=465)
-    # email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=587)
+    # ~ email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=465)
+    email_sender = SMTPMail(smtp_server, sender=mail_addr, password=mail_pwd, port=587)
     # ~ email_sender.send(subject=subject, message=message, receiver=os.environ["RECEIVER"],bcc=["haiwe.lu@sap.com"])
-    email_sender.send(
+    result = email_sender.send(
         subject=subject, message=message, receiver="luhw@cndatacom.com", bcc=["haiwei.lu@sap.com"]
     )
+    print(result)
 
 
 if __name__ == "__main__":
